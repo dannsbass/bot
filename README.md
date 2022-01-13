@@ -93,3 +93,40 @@ $bot->callback_query(function () {
 
 $bot->run();
 ```
+## Daftar Event
+
+- text
+- animation
+- audio
+- document
+- photo
+- sticker
+- video
+- video_note
+- voice
+- contact
+- dice
+- game
+- poll
+- venue
+- location
+- new_chat_members
+- left_chat_members
+- new_chat_title
+- new_chat_photo
+- delete_chat_photo
+- group_chat_created
+- supergroup_chat_created
+- channel_chat_created
+- message_auto_delete_timer_changed
+- migrate_to_chat_id
+- migrate_from_chat_id
+- pinned_message
+- invoice
+- successful_payment
+- connected_website
+- inline_query
+- callback_query
+- edited_message
+- channel_post
+- edited_channel_post

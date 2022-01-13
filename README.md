@@ -55,7 +55,7 @@ $bot->start(function () {
         'inline_keyboard' => $keyboard
     ];
 
-    return Bot::sendMessage('Hi too', ['reply' => true, 'reply_markup' => $reply_markup]);
+    return Bot::sendMessage('Mari kita mulai', ['reply' => true, 'reply_markup' => $reply_markup]);
 });
 
 

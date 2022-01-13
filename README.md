@@ -93,6 +93,30 @@ $bot->callback_query(function () {
 
 $bot->run();
 ```
+### Cara Mudah Membuat Inline Keyboard
+
+Ada cara lain untuk membuat inline keyboard dengan mudah:
+```php
+require 'Bot.php';
+
+$bot = new Bot('2062986487:AAF8P2bi0AtpaKYsCXhcSjGDtvsRIcGuONI',  'BotLatihan123Bot');
+
+$inline_keyboard = Bot::inline_keyboard('
+[Google|https://google.com] [Facebook|https://facebook.com]
+
+[Telegram|https://telegram.org]
+
+[Instagram|https://instagram.com] [Youtube|https://youtube.com]
+
+[Twitter|https://twitter.com]
+
+[Desainer|Danns]
+');
+
+$bot->start("Selamat <b>user</b> datang di <a href='https://www.googgle.com'>Google</a>",['parse_mode'=>'html','reply'=>true,'disable_web_page_preview'=>true,'reply_markup'=>$inline_keyboard]);
+
+$bot->run();
+```
 ## Daftar Event
 
 - text

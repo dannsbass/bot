@@ -114,7 +114,7 @@ class Bot
 
     public function getUsername()
     {
-        if(!empty($this->username)) return $this->username;
+        if (!empty($this->username)) return $this->username;
         $url = self::$url . '/getMe';
         if (function_exists('curl_version')) {
             $ch = curl_init($url);
@@ -175,6 +175,49 @@ class Bot
                     return self::send('sendMessage', ['text' => $args[0]]);
                 });
             }
+        }
+    }
+
+    public static function inline_keyboard($pesan)
+    {
+        if (preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]([^\n]+)?([\n]+|$)/', $pesan, $tombol)) {
+
+            $tombols = $tombol[0]; #array
+            $inline_keyboard = [];
+            foreach ($tombols as $tombol) {
+
+                preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]/', $tombol, $temuan);
+                $array = $temuan[0];
+                $susunan = [];
+                foreach ($array as $a) {
+
+                    $b = explode('|', $a);
+                    $bagian = [];
+                    foreach ($b as $c) {
+
+                        $bagian[] = $c;
+                    }
+                    $b0 = trim(str_replace('[', '', $bagian[0]));
+
+                    $b1 = trim(str_replace(']', '', $bagian[1]));
+
+                    if (filter_var($b1, FILTER_VALIDATE_URL) !== false) {
+                        $susunan[] = [
+                            "text" => $b0,
+                            "url" => $b1
+                        ];
+                    } else {
+                        $susunan[] = [
+                            "text" => $b0,
+                            "callback_data" => $b1
+                        ];
+                    }
+                }
+                $inline_keyboard[] = $susunan;
+            }
+            $inline_keyboard = json_encode(["inline_keyboard" => $inline_keyboard]);
+
+            return $inline_keyboard; #string json
         }
     }
 

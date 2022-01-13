@@ -12,7 +12,11 @@ $bot->start('Assalamualaikum');
 
 $bot->start('Assalamualaikum <b>user</b>',['parse_mode'=>'html']);
 
+$bot->start(['parse_mode'=>'html'],'Assalamualaikum <b>user</b>');
+
 $bot->start(['text'=>'Assalamualaikum','reply'=>true]);
+
+$bot->start(['text'=>'Assalamualaikum'],['reply'=>true]);
 
 $bot->start("Welcome to <a href='https://www.google.com'>Google</a>", ['reply' => true, 'disable_web_page_preview' => true, 'parse_mode'=>'html']);
 
@@ -52,12 +56,25 @@ $bot->text('*', function () {
     return Bot::sendMessage($text, ['reply' => true]);
 });
 
+$bot->anyText('Oke');
+
+$bot->anyText(function(){
+    $msg = Bot::message();
+    return Bot::sendMessage(json_encode($msg),['reply'=>true]);
+});
+
 $bot->photo('Photo uploaded');
+
+$bot->photo('Photo uploaded', ['reply'=>true]);
 
 $bot->photo(function () {
     $rincian = json_encode(Bot::message(), JSON_PRETTY_PRINT);
     return Bot::sendMessage("Anda baru saja mengunggah foto dengan rincian sebagai berikut:\n$rincian");
 });
+
+$bot->document("Anda baru saja mengunggah dokumen");
+
+$bot->document("Anda baru saja mengunggah dokumen",['reply'=>true]);
 
 $bot->document(function () {
     $rincian = json_encode(Bot::message(), JSON_PRETTY_PRINT);

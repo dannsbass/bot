@@ -2,8 +2,8 @@
 class Bot
 {
     public static $token = '';
-    protected static $username = '';
-    private $url = "https://api.telegram.org/bot";
+    public static $username = '';
+    public static $url = "https://api.telegram.org/bot";
     public static $dbg = '';
     public static $getUpdates = [];
     protected $_command = [];
@@ -25,57 +25,108 @@ class Bot
 
         self::$token = $token;
         self::$username = $username;
-        $this->url .= $token;
+        self::$url .= $token;
     }
 
-    // public function start(string $answer, array $options = []){
-    //     return self::send('sendMessage', array_merge(['text'=>$answer], $options));
-    //     // return call_user_func_array('self::send',['sendMessage',array_merge(['text'=>$answer],$options)]);
-    // }
+    public function manageStart($args)
+    {
+        if (isset($args[1])) {
+            if (is_array($args[1])) {
+                if (is_array($args[0])) {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', array_merge($args[0], $args[1]));
+                    });
+                } else {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', array_merge(['text' => $args[0]], $args[1]));
+                    });
+                }
+            } else {
+                if (is_array($args[0])) {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', array_merge($args[0], ['text' => $args[1]]));
+                    });
+                } else {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', ['text' => $args[0] . $args[1]]);
+                    });
+                }
+            }
+        } else {
+            return $this->text('/start', $args[0]);
+        }
+    }
 
     public function __call($type, $args)
     {
-        # $bot->start($args);
         if ($type == 'start') {
-            $this->text('/start', function()use($args){
-                
-                # $bot->start(['text'=>'Welcome','reply'=>true]);
-                if(is_array($args[0])){
-                    # Bot::sendMessage($args[0]);
-                    return self::send('sendMessage',$args[0]);
-                }
-                
-                # $bot->start('Welcome',['reply'=>true]);
-                # $bot->start($args[0], $args[1]);
-                if(isset($args[1]) and is_array($args[1]) and is_string($args[0]))
-                return self::send('sendMessage',array_merge(['text'=>array_shift($args)],$args[0]));
-
-                # $bot->start('Welcome');
-                return self::send('sendMessage',['text'=>$args[0]]);
-            });
+            return $this->manageStart($args);
         }
-        
-        # $bot->document('Document uploaded');
-        # $bot->photo('Photo uploaded');
-        # $bot->video('Video uploaded');
-        # ...
 
-        /* 
-        
-        $bot->photo(function(){
-            $msg = Bot::message();
-            return Bot::sendMessage(json_encode($msg)); 
-        });
-        
-        */
-        $this->on($type, $args[0]);
+        $types = [
+            'text',
+            'animation',
+            'audio',
+            'document',
+            'photo',
+            'sticker',
+            'video',
+            'video_note',
+            'voice',
+            'contact',
+            'dice',
+            'game',
+            'poll',
+            'venue',
+            'location',
+            'new_chat_members',
+            'left_chat_members',
+            'new_chat_title',
+            'new_chat_photo',
+            'delete_chat_photo',
+            'group_chat_created',
+            'supergroup_chat_created',
+            'channel_chat_created',
+            'message_auto_delete_timer_changed',
+            'migrate_to_chat_id',
+            'migrate_from_chat_id',
+            'pinned_message',
+            'invoice',
+            'successful_payment',
+            'connected_website',
+            'inline_query',
+            'callback_query',
+            'edited_message',
+            'channel_post',
+            'edited_channel_post',
+        ];
+
+        if (in_array($type, $types)) {
+            if (!isset($args[1])) {
+                return $this->on($type, $args[0]);
+            } else {
+                return $this->manageArgs($type, $args);
+            }
+        }
+
+        return self::__callStatic($type, $args);
     }
 
-    public function getUsername(){
-        $res = json_decode(file_get_contents($this->url.'/getMe'));
-        if($res) return $res->result->username;
+    public function getUsername()
+    {
+        if(!empty($this->username)) return $this->username;
+        $url = self::$url . '/getMe';
+        if (function_exists('curl_version')) {
+            $ch = curl_init($url);
+            $json = curl_exec($ch);
+            curl_close($ch);
+        } else {
+            $json = file_get_contents($url);
+        }
+        $res = json_decode($json);
+        return $res->result->username ?? false;
     }
-    
+
     public function text($command, $answer)
     {
         if ($command == '*') {
@@ -84,6 +135,49 @@ class Bot
             $this->_command[$command] = $answer;
         }
     }
+
+    public function anyText($answer)
+    {
+        $this->text('*', $answer);
+    }
+
+    private function manageArgs($type, $args)
+    {
+        if (isset($args[1])) {
+            if (is_array($args[1])) {
+                if (is_array($args[0])) {
+                    return $this->on($type, function () use ($args) {
+                        return self::send('sendMessage', array_merge($args[0], $args[1]));
+                    });
+                } else {
+                    return $this->on($type, function () use ($args) {
+                        return self::send('sendMessage', array_merge(['text' => array_shift($args)], $args[0]));
+                    });
+                }
+            } else {
+                if (is_array($args[0])) {
+                    return $this->on($type, function () use ($args) {
+                        return self::send('sendMessage', array_merge($args[0], ['text' => $args[1]]));
+                    });
+                } else {
+                    return $this->on($type, function () use ($args) {
+                        return self::send('sendMessage', ['text' => $args[0] . " " . $args[1]]);
+                    });
+                }
+            }
+        } else {
+            if (is_array($args[0])) {
+                return $this->on($type, function () use ($args) {
+                    return self::send('sendMessage', $args[0]);
+                });
+            } else {
+                return $this->on($type, function () use ($args) {
+                    return self::send('sendMessage', ['text' => $args[0]]);
+                });
+            }
+        }
+    }
+
     /**
      * Events.
      *
@@ -92,6 +186,9 @@ class Bot
      */
     public function on($types, $answer)
     {
+        if ($types == 'start') {
+            $this->_command['/start'] = $answer;
+        }
         $types = explode('|', $types);
         foreach ($types as $type) {
             $this->_onMessage[$type] = $answer;
@@ -318,7 +415,7 @@ class Bot
         if (function_exists('curl_version')) {
             $ch = curl_init();
             $options = [
-                CURLOPT_URL => 'https://api.telegram.org/bot' . self::$token . '/' . $action,
+                CURLOPT_URL => self::$url . '/' . $action,
                 CURLOPT_POST => true,
                 CURLOPT_RETURNTRANSFER => true,
                 CURLOPT_SSL_VERIFYHOST => false,
@@ -329,7 +426,7 @@ class Bot
                 $options[CURLOPT_POSTFIELDS] = $data;
             }
 
-            if ($upload !== false) {
+            if ($upload) {
                 $options[CURLOPT_HTTPHEADER] = ['Content-Type: multipart/form-data'];
             }
 
@@ -344,24 +441,17 @@ class Bot
             curl_close($ch);
         } else {
 
-            if (!is_array($data)) exit('Data tidak valid');
-            if ($upload) exit('Upload perlu curl. Versi PHP ini tidak mendukung curl. Silahkan instal dulu' . PHP_EOL);
-
-            $url = 'https://api.telegram.org/bot' . self::$token . '/' . $action;
-            $query_data = http_build_query($data);
-            $header = 'Content-Type: application/x-www-form-urlencoded';
+            if ($upload) return self::send('sendMessage', ['text' => 'Maaf, layanan ini tidak tersedia karena versi PHP yang digunakan saat ini tidak mendukung fungsi curl. Silahkan instal terlebih dahulu']);
 
             $opts = [
                 'http' => [
                     'method' => "POST",
-                    'header' => $header,
-                    'content' => $query_data
+                    'header' => 'Content-Type: application/x-www-form-urlencoded',
+                    'content' => http_build_query($data)
                 ]
             ];
 
-            $context = stream_context_create($opts);
-
-            $result = file_get_contents($url, false, $context);
+            $result = file_get_contents(self::$url . '/' . $action, false, stream_context_create($opts));
             if (!$result) return false;
 
             $httpcode = null; //perlu review lagi
@@ -447,12 +537,22 @@ class Bot
 
         if (isset($getUpdates['message']['text'])) {
             return 'text';
+        } elseif (isset($getUpdates['message']['animation'])) {
+            return 'animation';
         } elseif (isset($getUpdates['message']['photo'])) {
             return 'photo';
         } elseif (isset($getUpdates['message']['video'])) {
             return 'video';
+        } elseif (isset($getUpdates['message']['video_note'])) {
+            return 'video_note';
         } elseif (isset($getUpdates['message']['audio'])) {
             return 'audio';
+        } elseif (isset($getUpdates['message']['contact'])) {
+            return 'contact';
+        } elseif (isset($getUpdates['message']['dice'])) {
+            return 'dice';
+        } elseif (isset($getUpdates['message']['poll'])) {
+            return 'poll';
         } elseif (isset($getUpdates['message']['voice'])) {
             return 'voice';
         } elseif (isset($getUpdates['message']['document'])) {
@@ -467,10 +567,10 @@ class Bot
             return 'inline_query';
         } elseif (isset($getUpdates['callback_query'])) {
             return 'callback_query';
-        } elseif (isset($getUpdates['message']['new_chat_member'])) {
-            return 'new_chat_member';
-        } elseif (isset($getUpdates['message']['left_chat_member'])) {
-            return 'left_chat_member';
+        } elseif (isset($getUpdates['message']['new_chat_members'])) {
+            return 'new_chat_members';
+        } elseif (isset($getUpdates['message']['left_chat_members'])) {
+            return 'left_chat_members';
         } elseif (isset($getUpdates['message']['new_chat_title'])) {
             return 'new_chat_title';
         } elseif (isset($getUpdates['message']['new_chat_photo'])) {
@@ -485,8 +585,16 @@ class Bot
             return 'supergroup_chat_created';
         } elseif (isset($getUpdates['message']['migrate_to_chat_id'])) {
             return 'migrate_to_chat_id';
-        } elseif (isset($getUpdates['message']['migrate_from_chat_id '])) {
-            return 'migrate_from_chat_id ';
+        } elseif (isset($getUpdates['message']['migrate_from_chat_id'])) {
+            return 'migrate_from_chat_id';
+        } elseif (isset($getUpdates['message']['pinned_message'])) {
+            return 'pinned_message';
+        } elseif (isset($getUpdates['message']['invoice'])) {
+            return 'invoice';
+        } elseif (isset($getUpdates['message']['successful_payment'])) {
+            return 'successful_payment';
+        } elseif (isset($getUpdates['message']['connected_website'])) {
+            return 'connected_website';
         } elseif (isset($getUpdates['edited_message'])) {
             return 'edited_message';
         } elseif (isset($getUpdates['message']['game'])) {

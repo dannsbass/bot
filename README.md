@@ -119,7 +119,7 @@ $bot->run();
 ```
 ### Cara Mudah Membuat Keyboard
 
-Ada cara mudah membuat keyboard biasa (bukan inline_keyboard) menggunakan function Bot::keyboard()
+Ada cara mudah membuat keyboard biasa (bukan inline_keyboard) menggunakan function `Bot::keyboard($string)`
 ```php
 $bot->anyText(function(){
     $keyboard = Bot::keyboard('
@@ -132,10 +132,12 @@ $bot->anyText(function(){
 ## Daftar Method
 
 - `getUsername()` untuk mengambil username bot
-- `anyTexy()` untuk merespon teks apapun yang dikirim oleh user
-- `text($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `text('Hai', 'Hai juga')` untuk merespon teks `Hi` dengan teks `Hai juga` atau `text('Hai',function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang (*) pada parameter pertama seperti ini `text('*','Anda mengirim teks')` atau sama dengan function `anyText()` 
+- `anyTexy($response)` untuk merespon teks apapun yang dikirim oleh user, contoh `anyText('Silahkan hubungi Admin')`
+- `text($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `text('Hai', 'Hai juga')` untuk merespon teks `Hai` dengan teks `Hai juga` atau `text('Hai',function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang (*) pada parameter pertama seperti ini `text('*','Silahkan hubungi Admin')` atau sama dengan function `anyText('Silahkan hubungi Admin')` 
+- `cmd($request, $response)` alias `text($request, $response)`
+Static:
 - `keyboard($pola)` untuk membuat keyboard dari string dengan pola `[tombol]`
-- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]` contoh `[Google|'https://www.google.com']` atau `[Menu 1 | menu_1]`
+- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]` contoh `Bot::inline_keyboard('[Menu 1 | menu_1]')` atau `Bot::inline_keyboard('[Google|https://www.google.com]')`
 ## Daftar Event
 
 - text

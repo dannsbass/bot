@@ -127,6 +127,11 @@ class Bot
         return $res->result->username ?? false;
     }
 
+    public function cmd($command, $answer)
+    {
+        return $this->text($command, $answer);
+    }
+
     public function text($command, $answer)
     {
         if ($command == '*') {

@@ -28,35 +28,6 @@ class Bot
         self::$url .= $token;
     }
 
-    public function manageStart($args)
-    {
-        if (isset($args[1])) {
-            if (is_array($args[1])) {
-                if (is_array($args[0])) {
-                    return $this->text('/start', function () use ($args) {
-                        return self::send('sendMessage', array_merge($args[0], $args[1]));
-                    });
-                } else {
-                    return $this->text('/start', function () use ($args) {
-                        return self::send('sendMessage', array_merge(['text' => $args[0]], $args[1]));
-                    });
-                }
-            } else {
-                if (is_array($args[0])) {
-                    return $this->text('/start', function () use ($args) {
-                        return self::send('sendMessage', array_merge($args[0], ['text' => $args[1]]));
-                    });
-                } else {
-                    return $this->text('/start', function () use ($args) {
-                        return self::send('sendMessage', ['text' => $args[0] . $args[1]]);
-                    });
-                }
-            }
-        } else {
-            return $this->text('/start', $args[0]);
-        }
-    }
-
     public function __call($type, $args)
     {
         if ($type == 'start') {
@@ -110,6 +81,35 @@ class Bot
         }
 
         return self::__callStatic($type, $args);
+    }
+
+    private function manageStart($args)
+    {
+        if (isset($args[1])) {
+            if (is_array($args[1])) {
+                if (is_array($args[0])) {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', array_merge($args[0], $args[1]));
+                    });
+                } else {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', array_merge(['text' => $args[0]], $args[1]));
+                    });
+                }
+            } else {
+                if (is_array($args[0])) {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', array_merge($args[0], ['text' => $args[1]]));
+                    });
+                } else {
+                    return $this->text('/start', function () use ($args) {
+                        return self::send('sendMessage', ['text' => $args[0] . $args[1]]);
+                    });
+                }
+            }
+        } else {
+            return $this->text('/start', $args[0]);
+        }
     }
 
     public function getUsername()
@@ -175,6 +175,28 @@ class Bot
                     return self::send('sendMessage', ['text' => $args[0]]);
                 });
             }
+        }
+    }
+
+    public static function keyboard($pesan)
+    {
+        if (preg_match_all('/\[[^\]]+\]([^\n]+)?([\n]+|$)/', $pesan, $tombol)) {
+            $array_baru = [];
+            foreach ($tombol[0] as $tombol) {
+                preg_match_all('/\[([^\]]+)\]/', $tombol, $temuan);
+                $array = $temuan[1];
+                foreach ($array as $key => $value) {
+                    $array[$key] = ['text' => $value];
+                }
+                $array_baru[] = $array;
+            }
+            $keyboard = json_encode([
+                "keyboard" => $array_baru,
+                'resize_keyboard' => true,
+                'one_time_keyboard' => true,
+                'input_field_placeholder' => 'tulis...'
+            ]);
+            return $keyboard; #string json
         }
     }
 

@@ -117,6 +117,25 @@ $bot->start("Selamat <b>user</b> datang di <a href='https://www.googgle.com'>Goo
 
 $bot->run();
 ```
+### Cara Mudah Membuat Keyboard
+
+Ada cara mudah membuat keyboard biasa (bukan inline_keyboard) menggunakan function Bot::keyboard()
+```php
+$bot->anyText(function(){
+    $keyboard = Bot::keyboard('
+    [Tentang] [Fitur]
+    [Desainer]
+    ');
+    return Bot::sendMessage('Silahkan pilih menu yang tersedia',['reply'=>true,'reply_markup'=>$keyboard]);
+});
+```
+## Daftar Method
+
+- `getUsername()` untuk mengambil username bot
+- `anyTexy()` untuk merespon teks apapun yang dikirim oleh user
+- `text($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `text('Hai', 'Hai juga')` untuk merespon teks `Hi` dengan teks `Hai juga` atau `text('Hai',function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang (*) pada parameter pertama seperti ini `text('*','Anda mengirim teks')` atau sama dengan function `anyText()` 
+- `keyboard($pola)` untuk membuat keyboard dari string dengan pola `[tombol]`
+- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]` contoh `[Google|'https://www.google.com']` atau `[Menu 1 | menu_1]`
 ## Daftar Event
 
 - text

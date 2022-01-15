@@ -1,36 +1,43 @@
 # PHP Bot Telegram 
 
-Modifikasi dari PHPTelebot by radyakaze
+Modifikasi dari [PHPTelebot](https://github.com/radyakaze/phptelebot) by [radyakaze](https://github.com/radyakaze)
 
-## Cara Pakai
+## Cara Pasang
 
-Silahkan pilih cara yang paling Anda sukai:
+Salin file `Bot.php` lalu `include` atau `require` ke dalam file projek Anda.
 
-### Cara Pertama (Paling Sederhana)
+## Contoh Kode
+
+Berikut ini beberapa contoh kode yang bisa Anda pakai:
+
+### Contoh Pertama (Paling Sederhana)
 
 ```php
 require 'Bot.php';
 
-$bot = new Bot('2062986487:AAF8P2bi0AtpaKYsCXhcSjGDtvsRIcGuONI',  'BotLatihan123Bot');
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
 
 $bot->start('Assalamualaikum');
-$bot->text('Hai', 'Hai juga');
+$bot->chat('Hai', 'Hai juga');
+$bot->chat('/help', 'Cara menggunakan bot ini adalah sebagai berikut...');
+$bot->text('Kalau ada pertanyaan silahkan hubungi 08123456789');
 $bot->photo('Kamu baru saja mengunggah foto');
 $bot->document('Kamu baru saja mengunggah dokumen');
 $bot->video('Kamu baru saja mengunggah video');
+$bot->sticker('Kamu baru saja mengunggah sticker');
 
 $bot->run();
 ```
 
-### Cara Kedua (Pertengahan)
+### Contoh Kedua (Pertengahan)
 
 ```php
 require 'Bot.php';
 
-$bot = new Bot('2062986487:AAF8P2bi0AtpaKYsCXhcSjGDtvsRIcGuONI',  'BotLatihan123Bot');
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
 
 $bot->start('Assalamualaikum <b>user</b>',['parse_mode'=>'html']);
-$bot->text('*', 'Oke');
+$bot->chat('*', 'Oke');
 $bot->photo('Kamu baru saja mengunggah <code>foto</code>',['parse_mode'=>'html']);
 $bot->video('Kamu baru saja mengunggah <i>video</i>', ['parse_mode'=>'html', 'reply' => true]);
 $bot->document('Kamu baru saja mengunggah <a href="https://www.google.com">dokumen</a>',['parse_mode'=>'html','disable_web_page_preview'=>true]);
@@ -38,12 +45,12 @@ $bot->document('Kamu baru saja mengunggah <a href="https://www.google.com">dokum
 $bot->run();
 
 ```
-### Cara Ketiga (Kompleks)
+### Contoh Ketiga (Kompleks)
 
 ```php
 require 'Bot.php';
 
-$bot = new Bot('2062986487:AAF8P2bi0AtpaKYsCXhcSjGDtvsRIcGuONI',  'BotLatihan123Bot');
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
 
 $bot->start(function () {
     $keyboard[] = [
@@ -59,7 +66,7 @@ $bot->start(function () {
 });
 
 
-$bot->text('/menu', function () {
+$bot->chat('/menu', function () {
 
     $keyboard[] = [['text' => 'satu'], ['text' => 'dua']];
     $keyboard[] = [['text' => 'tiga'], ['text' => 'empat']];
@@ -97,20 +104,13 @@ $bot->run();
 
 Ada cara lain untuk membuat inline keyboard dengan mudah:
 ```php
-require 'Bot.php';
-
-$bot = new Bot('2062986487:AAF8P2bi0AtpaKYsCXhcSjGDtvsRIcGuONI',  'BotLatihan123Bot');
-
 $inline_keyboard = Bot::inline_keyboard('
+[Next|next] [Prev|preview]
 [Google|https://google.com] [Facebook|https://facebook.com]
-
 [Telegram|https://telegram.org]
-
 [Instagram|https://instagram.com] [Youtube|https://youtube.com]
-
 [Twitter|https://twitter.com]
-
-[Desainer|Danns]
+[Desainer|Danns] 
 ');
 
 $bot->start("Selamat <b>user</b> datang di <a href='https://www.googgle.com'>Google</a>",['parse_mode'=>'html','reply'=>true,'disable_web_page_preview'=>true,'reply_markup'=>$inline_keyboard]);
@@ -121,7 +121,7 @@ $bot->run();
 
 Ada cara mudah membuat keyboard biasa (bukan inline_keyboard) menggunakan function `Bot::keyboard($string)`
 ```php
-$bot->anyText(function(){
+$bot->text(function(){
     $keyboard = Bot::keyboard('
     [Tentang] [Fitur]
     [Desainer]
@@ -129,15 +129,30 @@ $bot->anyText(function(){
     return Bot::sendMessage('Silahkan pilih menu yang tersedia',['reply'=>true,'reply_markup'=>$keyboard]);
 });
 ```
-## Daftar Method
+## Daftar Method Biasa
 
 - `getUsername()` untuk mengambil username bot
-- `anyTexy($response)` untuk merespon teks apapun yang dikirim oleh user, contoh `anyText('Silahkan hubungi Admin')`
-- `text($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `text('Hai', 'Hai juga')` untuk merespon teks `Hai` dengan teks `Hai juga` atau `text('Hai',function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang (*) pada parameter pertama seperti ini `text('*','Silahkan hubungi Admin')` atau sama dengan function `anyText('Silahkan hubungi Admin')` 
-- `cmd($request, $response)` alias `text($request, $response)`
-Static:
-- `keyboard($pola)` untuk membuat keyboard dari string dengan pola `[tombol]`
-- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]` contoh `Bot::inline_keyboard('[Menu 1 | menu_1]')` atau `Bot::inline_keyboard('[Google|https://www.google.com]')`
+- `chat($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `chat('Hai', 'Hai juga')` untuk merespon teks `Hai` dengan teks `Hai juga` atau `chat('Hai',function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Kalau untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang (*) pada parameter pertama seperti ini `chat('*', 'Silahkan hubungi Admin')` atau bisa juga begini `text('Silahkan hubungi Admin')`, dua-duanya sama hasilnya.
+- `cmd($request, $response)` alias `chat($request, $response)`
+## Daftar Method Static
+
+- `keyboard($pola)` untuk membuat keyboard dari string dengan pola `[tombol]`, contoh:
+```php
+$tombol = Bot::keyboard('
+[UTAMA]
+[TENTANG] [MENU]
+[KEMBALI] [KEDEPAN]
+[INFO]
+');`
+```
+- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]`, contoh:
+```php
+$inline_keyboard = Bot::inline_keyboard('
+[ Next | next ] [ Back | back ]
+[ Menu 1 | menu_1 ] [ Google | https://google.com ]
+[ Info | info ]
+');
+```
 ## Daftar Event
 
 - text

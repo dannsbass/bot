@@ -88,27 +88,27 @@ class Bot
         if (isset($args[1])) {
             if (is_array($args[1])) {
                 if (is_array($args[0])) {
-                    return $this->text('/start', function () use ($args) {
+                    return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', array_merge($args[0], $args[1]));
                     });
                 } else {
-                    return $this->text('/start', function () use ($args) {
+                    return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', array_merge(['text' => $args[0]], $args[1]));
                     });
                 }
             } else {
                 if (is_array($args[0])) {
-                    return $this->text('/start', function () use ($args) {
+                    return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', array_merge($args[0], ['text' => $args[1]]));
                     });
                 } else {
-                    return $this->text('/start', function () use ($args) {
+                    return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', ['text' => $args[0] . $args[1]]);
                     });
                 }
             }
         } else {
-            return $this->text('/start', $args[0]);
+            return $this->chat('/start', $args[0]);
         }
     }
 
@@ -129,21 +129,16 @@ class Bot
 
     public function cmd($command, $answer)
     {
-        return $this->text($command, $answer);
+        return $this->chat($command, $answer);
     }
 
-    public function text($command, $answer)
+    public function chat($command, $answer)
     {
         if ($command == '*') {
             $this->_onMessage['text'] = $answer;
         } else {
             $this->_command[$command] = $answer;
         }
-    }
-
-    public function anyText($answer)
-    {
-        $this->text('*', $answer);
     }
 
     private function manageArgs($type, $args)

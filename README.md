@@ -23,6 +23,7 @@ $bot->text('Anda mengirim pesan teks');
 
 $bot->run();
 ```
+**Keterangan contoh 1**: seperti Anda lihat pada screenshot, bot hanya merespon pesan teks saja dan responnya hanyalah kalimat statis yaitu `Anda mengirim pesan teks`. Selain pesan teks, bot akan mengabaikannya alias tidak meresponnya sama sekali.
 
 ### Contoh 2
 
@@ -33,7 +34,6 @@ require 'Bot.php';
 
 $bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
 
-$bot->text('Anda mengirim pesan teks');
 $bot->chat('Hai', 'Hai juga');
 $bot->chat('Info', 'Ini adalah info');
 $bot->chat('/admin', 'Ini adalah admin');
@@ -42,6 +42,8 @@ $bot->text('Anda mengirim pesan teks');
 
 $bot->run();
 ```
+**Keterangan contoh 2**: bot merespon pesan teks `Hai` dengan `Hai juga`, `Info` dengan `Ini adalah info` dan `/admin` dengan `Ini adalah admin`. Selain itu, semua pesan teks akan direspon dengan kalimat statis `Anda mengirim pesan teks`.
+
 ### Contoh 3
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh3.png'>
@@ -69,6 +71,7 @@ $bot->chat('HELP', 'Untuk pertolongan, silahkan hubungi ...');
 
 $bot->run();
 ```
+**Keterangan contoh 3**: bot merespon perintah `/start` dengan pesan `Silahkan pilih menu berikut ini` disertai lima buah tombol (keyboard) yaitu `TENTANG`, `MENU`, `ADMIN`, `NO REKENING` dan `HELP`. Jika tombol ditekan, bot akan merespon dengan kalimat tertentu.
 
 ### Contoh 4
 
@@ -105,7 +108,7 @@ $bot->callback_query(function () {
 
 $bot->run();
 ```
-
+**Keterangan contoh 4**: bot merespon perintah `/start` dengan kalimat `Selamat user datang di Google` (salah ketik, harusnya: `selamat data user` hehe..). Perhatikan kata `user` ditebalkan dan kata `Google` berupa link yang merujuk ke situs `https://www.googgle.com`. Selain kalimat tersebut, bot juga menyertakan tombol-tombol yang responsif, yaitu jika diklik akan menghasilkan respon `Anda menekan tombol <anu>` kecuali tombol link yang berisi URL ke alamat situs tertentu.
 ### Contoh 5
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh5.png'>

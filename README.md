@@ -65,6 +65,11 @@ $bot->start(function () {
     return Bot::sendMessage('Mari kita mulai', ['reply' => true, 'reply_markup' => $reply_markup]);
 });
 
+$bot->chat('satu', 'Anda memilih satu');
+$bot->chat('dua', 'Anda memilih dua');
+$bot->chat('tiga', 'Anda memilih tiga');
+$bot->chat('empat', 'Anda memilih empat');
+$bot->chat('lima', 'Anda memilih lima');
 
 $bot->chat('/menu', function () {
 

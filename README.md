@@ -14,7 +14,7 @@ Berikut ini beberapa contoh kode yang bisa Anda pakai:
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh1.png'>
 
-**Keterangan contoh 1**: seperti Anda lihat pada screenshot, bot hanya merespon pesan teks saja dan responnya hanyalah kalimat statis yaitu `Anda mengirim pesan teks`. Selain pesan teks, bot akan mengabaikannya alias tidak meresponnya sama sekali. Method yang digunakan adalah `text()` dengan satu parameter. Berikut ini kodenya:
+**Keterangan contoh 1**: seperti Anda lihat pada screenshot, bot hanya merespon pesan teks saja dan responnya hanyalah kalimat statis yaitu `Anda mengirim pesan teks`. Selain pesan teks, bot akan mengabaikannya alias tidak meresponnya sama sekali. Berikut ini kodenya:
 
 ```php
 require 'Bot.php';
@@ -26,14 +26,13 @@ $bot->text('Anda mengirim pesan teks');
 $bot->run();
 ```
 
+Keterangan kode: Method yang digunakan untuk merespon semua pesan teks adalah `text()` dengan satu parameter (string) di dalamnya berisi respon/balasan kepada user.
+
 ### Contoh 2 (Merespon Pesan Teks Tertentu dengan Pesan Teks yang Tertentu)
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh2.png'>
 
-**Keterangan contoh 2**: bot merespon pesan teks `Hai` dengan `Hai juga`, `Info` dengan `Ini adalah info` dan `/admin` dengan `Ini adalah admin`. Selain itu, semua pesan teks akan direspon dengan kalimat statis `Anda mengirim pesan teks`. Method yang digunakan adalah `chat()` dengan dua parameter:
-
-1. `$request` (kiri) yaitu pesan teks yang dikirim oleh user
-2. `$respon` (kanan) yaitu pesan teks balasan dari bot.
+**Keterangan contoh 2**: bot merespon pesan teks `Hai` dengan `Hai juga`, `Info` dengan `Ini adalah info` dan `/admin` dengan `Ini adalah admin`. Selain itu, semua pesan teks akan direspon dengan kalimat statis `Anda mengirim pesan teks`. Berikut ini kodenya:
 
 ```php
 require 'Bot.php';
@@ -49,11 +48,16 @@ $bot->text('Anda mengirim pesan teks');
 $bot->run();
 ```
 
+Keterangan kode: Method yang digunakan adalah untuk merespon teks tertentu adalah `chat()` dengan dua parameter:
+
+1. `$request` (kiri) yaitu pesan teks yang dikirim oleh user.
+2. `$respon` (kanan) yaitu pesan teks balasan dari bot.
+
 ### Contoh 3 (Mengirim Teks disertai Tombol/Keyboard)
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh3.png'>
 
-**Keterangan contoh 3**: bot merespon perintah `/start` dengan pesan `Silahkan pilih menu berikut ini` disertai lima buah tombol (keyboard) yaitu `TENTANG`, `MENU`, `ADMIN`, `NO REKENING` dan `HELP`. Jika tombol ditekan, bot akan merespon dengan kalimat tertentu. Agar bot me-reply pesan yang dikirim oleh user, tambahkan elemen `'reply'=>true` pada array parameter kedua (kanan) dalam method `sendMessage()`. Untuk memodifikasi respon yang akan dikirim, gunakan `function(){}` pada parameter kedua dalam method `chat()`. Untuk membuat tombol/keyboard, method yang digunakan adalah _static method_ `keyboard()` dengan satu parameter berupa string dengan pola `[teks]`.
+**Keterangan contoh 3**: bot merespon perintah `/start` dengan pesan `Silahkan pilih menu berikut ini` disertai lima buah tombol (keyboard) yaitu `TENTANG`, `MENU`, `ADMIN`, `NO REKENING` dan `HELP`. Jika tombol ditekan, bot akan merespon dengan kalimat tertentu. Berikut ini kodenya:
 
 ```php
 require 'Bot.php';
@@ -78,6 +82,8 @@ $bot->chat('HELP', 'Untuk pertolongan, silahkan hubungi ...');
 
 $bot->run();
 ```
+
+Keterangan kode: Untuk me-reply pesan yang dikirim oleh user, tambahkan elemen `'reply'=>true` pada array parameter kedua (kanan) dalam method `sendMessage()`. Untuk memodifikasi respon yang akan dikirim, gunakan `function(){}` pada parameter kedua dalam method `chat()`. Untuk membuat tombol/keyboard, method yang digunakan adalah _static method_ `keyboard()` dengan satu parameter berupa string dengan pola `[teks]`.
 
 ### Contoh 4 (Membuat Tombol/Keyboard Inline yang Responsif)
 
@@ -117,11 +123,13 @@ $bot->callback_query(function () {
 $bot->run();
 ```
 
+Keterangan kode: untuk membuat inline_keyboard secara mudah dan cepat, gunakan method `Bot::inline_keyboard()` dengan satu parameter berupa string yang polanya adalah `[teks|teks]` atau `[teks|URL]`. Method `start($respon, $options)` adalah singkatan dari `chat('/start', function() use($respon, $options){ return Bot::sendMessage($respon, $options);})`, hasilnya sama. Method `callback_query()` diambil dari nama events pada Telegram Bot API (lihat daftarnya di bawah). Fungsinya untuk merespon tombol inline_keyboard jika diklik/ditekan. Sedangkan method `answerCallbackQuery` adalah salah satu method bawaan [Telegram](https://core.telegram.org/bots/api#answercallbackquery) untuk menampilkan notifikasi pada layar chatting bagian atas sebagai alert (peringatan).
+
 ### Contoh 5 (Membalas Foto dengan Teks)
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh5.png'>
 
-**Keterangan contoh 5**: bot merespon teks `/start` dengan kalimat `Selamat datang di bot ...` dan merespon foto yang diunggah dengan kalimat `Anda baru saja mengunggah foto dengan rincian sebagai berikut:` lalu disebutkan rincian foto yang dikirim tersebut. Cara mendapatkan rincian tersebut adalah dengan menggunakan _static method_ bernama `message()` bawaan PHPTelebot. Output method tersebut berupa _array_ sehingga perlu di-encode dengan `json_encode` supaya berubah menjadi _string_ dan bisa dikirim ke user.
+**Keterangan contoh 5**: bot merespon teks `/start` dengan kalimat `Selamat datang di bot ...` dan merespon foto yang diunggah dengan kalimat `Anda baru saja mengunggah foto dengan rincian sebagai berikut:` lalu disebutkan rincian foto yang dikirim tersebut.
 
 ```php
 require 'Bot.php';
@@ -137,11 +145,13 @@ $bot->photo(function () {
 $bot->run();
 ```
 
+Keterangan kode: Bot merespon foto yang dikirim oleh user menggunakan method `photo()` yang berisi satu parameter berupa _function_. Cara mendapatkan rincian foto yang dikirim oleh user adalah dengan menggunakan _static method_ bernama `message()` bawaan PHPTelebot. Output method tersebut berupa _array_ sehingga perlu di-encode dengan `json_encode` supaya berubah menjadi _string_ dan bisa dikirim ke user.
+
 ### Contoh 6 (Membalas Foto dengan Foto yang Sama)
 
 <img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh6.png'>
 
-**Keterangan contoh 6**: bot merespon pesan teks `/start` dengan kalimat `Silahkan kirim foto` dan merespon foto yang diunggah dengan mengembalikan foto tersebut ke user yang mengirimnya menggunakan static method `sendPhoto()` dengan parameter `$photo` yang diambil dari _file_id_ foto tesebut.
+**Keterangan contoh 6**: bot merespon pesan teks `/start` dengan kalimat `Silahkan kirim foto` dan merespon foto yang diunggah dengan mengembalikan foto tersebut ke user yang mengirimnya. Berikut ini kodenya:
 
 ```php
 require 'Bot.php';
@@ -157,6 +167,8 @@ $bot->photo(function () {
 
 $bot->run();
 ```
+
+Keterangan kode: untuk mengirim foto ke user, gunakan static method `sendPhoto()` dengan parameter `$photo` yang diambil dari _file_id_ foto tesebut. Baca keterangan selengkapnya tentang method [sendPhoto](https://core.telegram.org/bots/api#sendphoto)
 
 ### Contoh 7
 
@@ -259,7 +271,7 @@ $bot->run();
 
 ### Cara Mudah Membuat Inline Keyboard
 
-Ada cara mudah untuk membuat *inline keyboard* dengan menggunakan *method* `Bot::inline_keyboard()`
+Ada cara mudah untuk membuat _inline keyboard_ dengan menggunakan _method_ `Bot::inline_keyboard()`
 
 ```php
 $inline_keyboard = Bot::inline_keyboard('
@@ -284,7 +296,7 @@ $bot->start($pesan, $options);
 
 ### Cara Mudah Membuat Keyboard
 
-Ada cara mudah membuat *keyboard* biasa (bukan *inline_keyboard*) menggunakan *method* `Bot::keyboard($string)`
+Ada cara mudah membuat _keyboard_ biasa (bukan _inline_keyboard_) menggunakan _method_ `Bot::keyboard($string)`
 
 ```php
 $bot->text(function(){
@@ -307,24 +319,24 @@ $bot->text(function(){
 
 - `keyboard($pola)` untuk membuat keyboard dari string dengan pola `[tombol]`, contoh:
 
-    ```php
-    $tombol = Bot::keyboard('
-        [UTAMA]
-        [TENTANG] [MENU]
-        [KEMBALI] [KEDEPAN]
-        [INFO]
-    ');`
-    ```
+  ```php
+  $tombol = Bot::keyboard('
+      [UTAMA]
+      [TENTANG] [MENU]
+      [KEMBALI] [KEDEPAN]
+      [INFO]
+  ');`
+  ```
 
 - `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]`, contoh:
 
-    ```php
-    $inline_keyboard = Bot::inline_keyboard('
-        [ Next | next ] [ Back | back ]
-        [ Menu 1 | menu_1 ] [ Google | https://google.com ]
-        [ Info | info ]
-    ');
-    ```
+  ```php
+  $inline_keyboard = Bot::inline_keyboard('
+      [ Next | next ] [ Back | back ]
+      [ Menu 1 | menu_1 ] [ Google | https://google.com ]
+      [ Info | info ]
+  ');
+  ```
 
 ## Daftar Events
 

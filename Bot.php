@@ -114,7 +114,7 @@ class Bot
 
     public function getUsername()
     {
-        if (!empty($this->username)) return $this->username;
+        if (!empty(self::$username)) return self::$username;
         $url = self::$url . '/getMe';
         if (function_exists('curl_version')) {
             $ch = curl_init($url);

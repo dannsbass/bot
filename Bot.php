@@ -253,6 +253,7 @@ class Bot
     {
         if ($types == 'start') {
             $this->_command['/start'] = $answer;
+            return;
         }
         $types = explode('|', $types);
         foreach ($types as $type) {

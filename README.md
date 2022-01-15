@@ -10,7 +10,139 @@ Salin file `Bot.php` lalu `include` atau `require` ke dalam file projek Anda.
 
 Berikut ini beberapa contoh kode yang bisa Anda pakai:
 
-### Contoh Pertama (Paling Sederhana)
+### Contoh 1
+
+<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh1.png'>
+
+```php
+require 'Bot.php';
+
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->text('Anda mengirim pesan teks');
+
+$bot->run();
+```
+
+### Contoh 2
+
+<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh2.png'>
+
+```php
+require 'Bot.php';
+
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->text('Anda mengirim pesan teks');
+$bot->chat('Hai', 'Hai juga');
+$bot->chat('Info', 'Ini adalah info');
+$bot->chat('/admin', 'Ini adalah admin');
+
+$bot->text('Anda mengirim pesan teks');
+
+$bot->run();
+```
+### Contoh 3
+
+<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh3.png'>
+
+```php
+require 'Bot.php';
+
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->chat('/start', function(){
+    $pesan = 'Silahkan pilih menu berikut ini';
+    $tombol = Bot::keyboard('
+    [TENTANG] [MENU]
+    [ADMIN] [NO REKENING]
+    [HELP]
+    ');
+    return Bot::sendMessage($pesan, ['reply'=>true, 'reply_markup'=>$tombol]);
+});
+
+$bot->chat('TENTANG', 'Kami adalah ...');
+$bot->chat('MENU', 'Berikut ini adalah menu ...');
+$bot->chat('ADMIN', 'Untuk menghubungi Admin, silahkan ...');
+$bot->chat('NO REKENING', 'Silahkan transfer ke no rekening berikut ...');
+$bot->chat('HELP', 'Untuk pertolongan, silahkan hubungi ...');
+
+$bot->run();
+```
+
+### Contoh 4
+
+<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh4.png'>
+
+```php
+require 'Bot.php';
+
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$inline_keyboard = Bot::inline_keyboard('
+[Next|next] [Prev|preview]
+[Google|https://google.com] [Facebook|https://facebook.com]
+[Telegram|https://telegram.org]
+[Instagram|https://instagram.com] [Youtube|https://youtube.com]
+[Twitter|https://twitter.com]
+[Desainer|Danns] 
+');
+
+$options = [
+    'reply'=>true, // sebagai ganti 'reply_to_message_id' => $message_id
+    'parse_mode'=>'html', // pilihannya: 'html' atau 'markdown'
+    'disable_web_page_preview'=>true, // pilihannya: true atau false
+    'reply_markup'=>$inline_keyboard
+];
+
+$bot->start("Selamat <b>user</b> datang di <a href='https://www.googgle.com'>Google</a>.", $options);
+
+$bot->callback_query(function () {
+    $msg = Bot::message();
+    $data = $msg['data'];
+    return Bot::answerCallbackQuery("Anda menekan tombol $data");
+});
+
+$bot->run();
+```
+
+### Contoh 5
+
+<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh5.png'>
+
+```php
+require 'Bot.php';
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->start('Selamat datang di bot ...');
+
+$bot->photo(function () {
+    $rincian = json_encode(Bot::message(), JSON_PRETTY_PRINT);
+    return Bot::sendMessage("Anda baru saja mengunggah foto dengan rincian sebagai berikut:\n$rincian");
+});
+
+$bot->run();
+```
+
+### Contoh 6
+
+<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh6.png'>
+
+```php
+require 'Bot.php';
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->start('Silahkan kirim foto');
+
+$bot->photo(function () {
+    $msg = Bot::message();
+    $photo = $msg['photo'][0]['file_id'];
+    return Bot::sendPhoto($photo);
+});
+
+$bot->run();
+```
+### Contoh 7
 
 ```php
 require 'Bot.php';
@@ -29,7 +161,7 @@ $bot->sticker('Kamu baru saja mengunggah sticker');
 $bot->run();
 ```
 
-### Contoh Kedua (Pertengahan)
+### Contoh 8
 
 ```php
 require 'Bot.php';
@@ -45,7 +177,7 @@ $bot->document('Kamu baru saja mengunggah <a href="https://www.google.com">dokum
 $bot->run();
 
 ```
-### Contoh Ketiga (Kompleks)
+### Contoh 9
 
 ```php
 require 'Bot.php';
@@ -107,7 +239,7 @@ $bot->run();
 ```
 ### Cara Mudah Membuat Inline Keyboard
 
-Ada cara lain untuk membuat inline keyboard dengan mudah:
+Ada cara untuk membuat inline keyboard dengan mudah:
 ```php
 $inline_keyboard = Bot::inline_keyboard('
 [Next|next] [Prev|preview]

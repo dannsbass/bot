@@ -259,7 +259,7 @@ $bot->run();
 
 ### Cara Mudah Membuat Inline Keyboard
 
-Ada cara untuk membuat inline keyboard dengan mudah:
+Ada cara mudah untuk membuat *inline keyboard* dengan menggunakan *method* `Bot::inline_keyboard()`
 
 ```php
 $inline_keyboard = Bot::inline_keyboard('
@@ -284,7 +284,7 @@ $bot->start($pesan, $options);
 
 ### Cara Mudah Membuat Keyboard
 
-Ada cara mudah membuat keyboard biasa (bukan inline_keyboard) menggunakan function `Bot::keyboard($string)`
+Ada cara mudah membuat *keyboard* biasa (bukan *inline_keyboard*) menggunakan *method* `Bot::keyboard($string)`
 
 ```php
 $bot->text(function(){
@@ -301,6 +301,7 @@ $bot->text(function(){
 - `getUsername()` untuk mengambil username bot
 - `chat($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `chat('Hai', 'Hai juga')` untuk merespon teks `Hai` dengan teks `Hai juga` atau `chat('Hai',function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Kalau untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang ( `*` ) pada parameter pertama seperti ini `chat('*', 'Silahkan hubungi Admin')` atau bisa juga begini `text('Silahkan hubungi Admin')`, dua-duanya sama hasilnya.
 - `cmd($request, $response)` alias `chat($request, $response)`
+- **Events** (lihat daftarnya di bawah)
 
 ## Daftar Method Static
 
@@ -325,7 +326,9 @@ $bot->text(function(){
     ');
     ```
 
-## Daftar Event
+## Daftar Events
+
+Ada method-method yang diambil dari nama-nama events pada [Telegram Bot API](https://core.telegram.org/bots/api#message). Cara menggunakannya sama dengan menggunakan method biasa, yaitu `$bot->nama_method()` contoh: `$bot->text()` untuk merespon pesan teks, `$bot->animation()` untuk merespon pesan animasi, `$bot->audio()` untuk merespon pesan audio dan seterusnya. Berikut ini daftarnya:
 
 - text
 - animation
@@ -357,6 +360,12 @@ $bot->text(function(){
 - invoice
 - successful_payment
 - connected_website
+- passport_data
+- proximity_alert_triggered
+- voice_chat_scheduled
+- voice_chat_started
+- voice_chat_ended
+- voice_chat_participants_invited
 - inline_query
 - callback_query
 - edited_message

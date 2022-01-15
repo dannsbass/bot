@@ -21,7 +21,7 @@ $bot->chat('tiga', 'Anda memilih tiga');
 $bot->chat('empat', 'Anda memilih empat');
 $bot->chat('lima', 'Anda memilih lima');
 
-$bot->chat('/menu', function () {
+$bot->chat('/menu|/help', function () {
 
     $keyboard[] = [['text' => 'satu'], ['text' => 'dua']];
     $keyboard[] = [['text' => 'tiga'], ['text' => 'empat']];

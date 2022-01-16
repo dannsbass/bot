@@ -89,6 +89,10 @@ class Bot
         return self::__callStatic($type, $args);
     }
 
+    public function __invoke($method, $args){
+        return self::send($method, $args);
+    }
+
     private function manageStart($args)
     {
         if (isset($args[1])) {
@@ -472,7 +476,9 @@ class Bot
             if (isset($getUpdates['callback_query'])) {
                 $getUpdates = $getUpdates['callback_query'];
             }
-            $data['chat_id'] = $getUpdates['message']['chat']['id'];
+            if(isset($getUpdates['message']['chat']['id'])){
+                $data['chat_id'] = $getUpdates['message']['chat']['id'];
+            }
             // Reply message
             if (!isset($data['reply_to_message_id']) && isset($data['reply']) && $data['reply'] === true) {
                 $data['reply_to_message_id'] = $getUpdates['message']['message_id'];

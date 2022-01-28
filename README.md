@@ -48,7 +48,7 @@ $bot->text('Anda mengirim pesan teks');
 $bot->run();
 ```
 
-Keterangan kode: Method yang digunakan adalah untuk merespon teks tertentu adalah `chat()` dengan dua parameter:
+Keterangan kode: Method yang digunakan untuk merespon teks tertentu adalah `chat()` dengan dua parameter:
 
 1. `$request` (kiri) yaitu pesan teks yang dikirim oleh user.
 2. `$respon` (kanan) yaitu pesan teks balasan dari bot.

@@ -1,21 +1,56 @@
 <?php
 class Bot
 {
+    /**
+     * Bot token from @BotFather
+     */
     public static $token = '';
-    public static $username = '';
-    public static $url = "https://api.telegram.org/bot";
-    public static $dbg = '';
-    public static $getUpdates = [];
-    protected $_command = [];
-    protected $_onMessage = [];
-    public static $debug = true;
-    protected static $version = '1.3';
 
-    public function __construct($token, $username = '')
+    /**
+     * Bot username from @BotFather
+     */
+    public static $username = '';
+
+    /**
+     * Telegram Bot API URL / endpoint
+     */
+    public static $url = "https://api.telegram.org/bot";
+
+    /**
+     * for debugging (in CLI mode)
+     */
+    public static $dbg = '';
+
+    /**
+     * parsed-JSON from Telegram server
+     */
+    public static $getUpdates = [];
+
+    /**
+     * array of commands and the responds
+     */
+    protected $_command = [];
+
+    /**
+     * array of events (types) and the responds
+     */
+    protected $_onMessage = [];
+
+    /**
+     * to be switched ON / OFF on CLI mode
+     */
+    public static $debug = true;
+
+    /**
+     * version of this code
+     */
+    protected static $version = '1.0';
+
+    public function __construct(string $token, string $username = '')
     {
         // Check php version
         if (version_compare(phpversion(), '5.4', '<')) {
-            die("PHPTelebot needs to use PHP 5.4 or higher.\n");
+            die("It requires PHP 5.4 or higher. Your PHP version is " . phpversion() . PHP_EOL);
         }
 
         // Check bot token
@@ -30,10 +65,10 @@ class Bot
 
     public function __call($type, $args)
     {
-        if ($type == 'start') {
-            return $this->manageStart($args);
-        }
-
+        /**
+         * list of events (types)
+         * see: https://core.telegram.org/bots/api#message
+         */
         $types = [
             'text',
             'animation',
@@ -77,52 +112,90 @@ class Bot
             'channel_post',
             'edited_channel_post',
         ];
-
+        /**
+         * $type is __call
+         * for example: 
+         * type of $bot->text() is text
+         * type of $bot->photo() is photo
+         * etc.
+         */
         if (in_array($type, $types)) {
-            if (!isset($args[1])) {
-                return $this->on($type, $args[0]);
-            } else {
-                return $this->manageArgs($type, $args);
-            }
+            /**
+             * $bot->$type($args[0])
+             */
+            if (!isset($args[1])) return $this->on($type, $args[0]);
+            /**
+             * $bot->$type($args[0], $args[1])
+             */
+            else return $this->manageArgs($type, $args);
+        } else {
+            /**
+             * $bot->$type($args) = Bot::$type($args)
+             */
+            return self::__callStatic($type, $args);
         }
-
-        return self::__callStatic($type, $args);
     }
 
-    public function __invoke($method, $args){
+    /**
+     * $bot($method, $args)
+     * for example: $bot('sendMessage', ['text'=>$text, 'chat_id'=>$chat_id])
+     */
+    public function __invoke($method, $args)
+    {
+        /**
+         * Bot::send($method, $args)
+         */
         return self::send($method, $args);
     }
 
-    private function manageStart($args)
+    private function start($args)
     {
         if (isset($args[1])) {
             if (is_array($args[1])) {
                 if (is_array($args[0])) {
+                    /**
+                     * for example: $bot->start(['text'=>'test'],['parse_mode'=>'html'])
+                     */
                     return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', array_merge($args[0], $args[1]));
                     });
                 } else {
+                    /**
+                     * for example: $bot->start('test', ['parse_mode'=>'html'])
+                     */
                     return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', array_merge(['text' => $args[0]], $args[1]));
                     });
                 }
             } else {
                 if (is_array($args[0])) {
+                    /**
+                     * for example: $bot->start(['parse_mode'=>'html'], 'test')
+                     */
                     return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', array_merge($args[0], ['text' => $args[1]]));
                     });
                 } else {
+                    /**
+                     * for example: $bot->start('test', 'ok')
+                     */
                     return $this->chat('/start', function () use ($args) {
                         return self::send('sendMessage', ['text' => $args[0] . $args[1]]);
                     });
                 }
             }
         } else {
+            /**
+             * for example: $bot->start('test')
+             */
             return $this->chat('/start', $args[0]);
         }
     }
 
-    public function getUsername()
+    /**
+     * get bot username
+     */
+    public function get_bot_username()
     {
         if (!empty(self::$username)) return self::$username;
         $url = self::$url . '/getMe';
@@ -137,12 +210,21 @@ class Bot
         return $res->result->username ?? false;
     }
 
-    public function cmd($command, $answer)
+    /**
+     * alias of chat()
+     */
+    public function cmd(string $command, $answer)
     {
         return $this->chat($command, $answer);
     }
 
-    public function chat($command, $answer)
+    /**
+     * Command.
+     *
+     * @param string          $command
+     * @param callable|string $answer
+     */
+    public function chat(string $command, $answer)
     {
         if ($command == '*') {
             $this->_onMessage['text'] = $answer;
@@ -151,6 +233,9 @@ class Bot
         }
     }
 
+    /**
+     * to manage args of method
+     */
     private function manageArgs($type, $args)
     {
         if (isset($args[1])) {
@@ -188,68 +273,75 @@ class Bot
         }
     }
 
-    public static function keyboard($pesan)
-    {
-        if (preg_match_all('/\[[^\]]+\]([^\n]+)?([\n]+|$)/', $pesan, $tombol)) {
-            $array_baru = [];
-            foreach ($tombol[0] as $tombol) {
-                preg_match_all('/\[([^\]]+)\]/', $tombol, $temuan);
-                $array = $temuan[1];
+    /**
+     * to build keyboard from string
+     */
+    public static function keyboard(
+        string $pattern,
+        $input_field_placeholder = 'type here..',
+        $resize_keyboard = true,
+        $one_time_keyboard = true
+    ) {
+        /**
+         * for example: Bot::keyboard('[text]')
+         */
+        if (preg_match_all('/\[[^\]]+\]([^\n]+)?([\n]+|$)/', $pattern, $match)) {
+            $keyboard = [];
+            foreach ($match[0] as $list) {
+                preg_match_all('/\[([^\]]+)\]/', $list, $new);
+                $array = $new[1];
                 foreach ($array as $key => $value) {
                     $array[$key] = ['text' => $value];
                 }
-                $array_baru[] = $array;
+                $keyboard[] = $array;
             }
-            $keyboard = json_encode([
-                "keyboard" => $array_baru,
-                'resize_keyboard' => true,
-                'one_time_keyboard' => true,
-                'input_field_placeholder' => 'tulis...'
+            return json_encode([
+                "keyboard" => $keyboard,
+                'resize_keyboard' => $resize_keyboard,
+                'one_time_keyboard' => $one_time_keyboard,
+                'input_field_placeholder' => $input_field_placeholder
             ]);
-            return $keyboard; #string json
         }
     }
 
-    public static function inline_keyboard($pesan)
+    /**
+     * to build inline_keyboard from string
+     */
+    public static function inline_keyboard(string $pattern)
     {
-        if (preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]([^\n]+)?([\n]+|$)/', $pesan, $tombol)) {
-
-            $tombols = $tombol[0]; #array
+        /**
+         * Bot::inline_keyboard('[text|text] [url|http://url]')
+         */
+        if (preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]([^\n]+)?([\n]+|$)/', $pattern, $match)) {
+            $arr = $match[0]; #array
             $inline_keyboard = [];
-            foreach ($tombols as $tombol) {
-
-                preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]/', $tombol, $temuan);
-                $array = $temuan[0];
-                $susunan = [];
+            foreach ($arr as $list) {
+                preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]/', $list, $new);
+                $array = $new[0];
+                $arrange = [];
                 foreach ($array as $a) {
-
                     $b = explode('|', $a);
-                    $bagian = [];
+                    $x = [];
                     foreach ($b as $c) {
-
-                        $bagian[] = $c;
+                        $x[] = $c;
                     }
-                    $b0 = trim(str_replace('[', '', $bagian[0]));
-
-                    $b1 = trim(str_replace(']', '', $bagian[1]));
-
+                    $b0 = trim(str_replace('[', '', $x[0]));
+                    $b1 = trim(str_replace(']', '', $x[1]));
                     if (filter_var($b1, FILTER_VALIDATE_URL) !== false) {
-                        $susunan[] = [
+                        $arrange[] = [
                             "text" => $b0,
                             "url" => $b1
                         ];
                     } else {
-                        $susunan[] = [
+                        $arrange[] = [
                             "text" => $b0,
                             "callback_data" => $b1
                         ];
                     }
                 }
-                $inline_keyboard[] = $susunan;
+                $inline_keyboard[] = $arrange;
             }
-            $inline_keyboard = json_encode(["inline_keyboard" => $inline_keyboard]);
-
-            return $inline_keyboard; #string json
+            return json_encode(["inline_keyboard" => $inline_keyboard]);
         }
     }
 
@@ -476,7 +568,7 @@ class Bot
             if (isset($getUpdates['callback_query'])) {
                 $getUpdates = $getUpdates['callback_query'];
             }
-            if(isset($getUpdates['message']['chat']['id'])){
+            if (isset($getUpdates['message']['chat']['id'])) {
                 $data['chat_id'] = $getUpdates['message']['chat']['id'];
             }
             // Reply message

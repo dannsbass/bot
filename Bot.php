@@ -85,6 +85,9 @@ class Bot
 
     public function __call($type, $args)
     {
+        if($type == 'start'){
+            return $this->start($args);
+        }
         /**
          * list of events (types)
          * see: https://core.telegram.org/bots/api#message

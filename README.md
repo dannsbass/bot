@@ -312,9 +312,14 @@ $bot->text(function(){
 
 - `start($sambutan)` untuk menyambut user baru yang menekan tombol `START` atau user yang mengirim pesan teks `/start` kepada bot. Parameternya bisa satu berupa string, contoh `start('Assalamualaikum user')`, bisa juga berupa function, contoh `start(function(){ return Bot::sendMessage('Assalamualikum user');})` dan bisa juga disi dengan dua parameter (string dan array), contoh: `start('Assalamualaikum *user*', ['parse_mode'=>'markdown'])` di mana array berisi rincian pesan yang dikirim (lihat dokumentasinya di: [Telegram](https://core.telegram.org/bots/api#sendmessage)).
 - `chat($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `chat('Hai', 'Hai juga')` untuk merespon teks `Hai` dengan teks `Hai juga` atau `chat('Hai', function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Kalau untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang ( `*` ) pada parameter pertama seperti ini `chat('*', 'Silahkan hubungi Admin')` atau bisa juga begini `text('Silahkan hubungi Admin')`, dua-duanya sama hasilnya.
-- `cmd($request, $response)` alias `chat($request, $response)`
-- `getUsername()` untuk mengambil username bot
-- **Events** (lihat daftarnya di bawah)
+- `cmd($request, $response)` alias `chat($request, $response)`.
+- `all($response)` untuk me-response semua event yang belum diatur sebelumnya.
+- `name()` untuk mengambil username bot.
+- `user()` untuk mengambil nama user.
+- `from_id()` untuk mengambil user id.
+- `chat_id()` untuk mengambil chat id.
+- `message_text()` untuk mengambil teks yang dikirim oleh user (hanya berlaku jika user mengirim pesan teks).
+- **Events** (lihat daftarnya di bawah).
 
 ## Daftar Method Static
 

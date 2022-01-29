@@ -7,9 +7,9 @@ class Bot
     public static $token = '';
 
     /**
-     * Bot username from @BotFather
+     * Bot name from @BotFather
      */
-    public static $username = '';
+    public static $name = '';
 
     /**
      * Telegram Bot API URL / endpoint
@@ -46,7 +46,27 @@ class Bot
      */
     protected static $version = '1.0';
 
-    public function __construct(string $token, string $username = '')
+    /**
+     * message text
+     */
+    public static $message_text = '';
+
+    /**
+     * user name (first and last)
+     */
+    public static $user = '';
+
+    /**
+     * user id
+     */
+    public static $from_id;
+
+    /**
+     * chat id
+     */
+    public static $chat_id;
+
+    public function __construct(string $token, string $name = '')
     {
         // Check php version
         if (version_compare(phpversion(), '5.4', '<')) {
@@ -59,7 +79,7 @@ class Bot
         }
 
         self::$token = $token;
-        self::$username = $username;
+        self::$name = $name;
         self::$url .= $token;
     }
 
@@ -127,7 +147,7 @@ class Bot
             /**
              * $bot->$type($args[0], $args[1])
              */
-            else return $this->manageArgs($type, $args);
+            else return $this->manage_args($type, $args);
         } else {
             /**
              * $bot->$type($args) = Bot::$type($args)
@@ -193,11 +213,11 @@ class Bot
     }
 
     /**
-     * get bot username
+     * get bot name
      */
-    public function get_bot_username()
+    public static function name()
     {
-        if (!empty(self::$username)) return self::$username;
+        if (!empty(self::$name)) return self::$name;
         $url = self::$url . '/getMe';
         if (function_exists('curl_version')) {
             $ch = curl_init($url);
@@ -234,9 +254,18 @@ class Bot
     }
 
     /**
+     * array of chat
+     */
+    public function chat_array(array $array){
+        foreach ($array as $key => $value) {
+            return $this->chat($key, $value);
+        }
+    }
+
+    /**
      * to manage args of method
      */
-    private function manageArgs($type, $args)
+    private function manage_args($type, $args)
     {
         if (isset($args[1])) {
             if (is_array($args[1])) {
@@ -343,6 +372,41 @@ class Bot
             }
             return json_encode(["inline_keyboard" => $inline_keyboard]);
         }
+    }
+
+    /**
+     * to handle All events
+     */
+    public function all($response){
+        return $this->on('*', $response);
+    }
+
+    /**
+     * to get message text
+     */
+    public static function message_text(){
+        return self::$message_text;
+    }
+
+    /**
+     * to get first (and last) name of user
+     */
+    public static function user(){
+        return self::$user;
+    }
+
+    /**
+     * get user id
+     */
+    public static function from_id(){
+        return self::$from_id;
+    }
+
+    /**
+     * get chat id
+     */
+    public static function chat_id(){
+        return self::$chat_id;
     }
 
     /**
@@ -467,23 +531,31 @@ class Bot
     {
         $get = self::$getUpdates;
         $run = false;
-
+        
+        if(isset($get['message'])){
+            self::$user = $get['message']['from']['first_name'] ?? '';
+            self::$user .= $get['message']['from']['last_name'] ?? '';
+            self::$from_id = $get['message']['from']['id'];
+            self::$chat_id = $get['message']['chat']['id'];
+        }
+        
         if (isset($get['message']['date']) && $get['message']['date'] < (time() - 120)) {
             return '-- Pass --';
         }
 
         if (self::type() == 'text') {
+            self::$message_text = $get['message']['text'];
             $customRegex = false;
             foreach ($this->_command as $cmd => $call) {
                 if (substr($cmd, 0, 12) == 'customRegex:') {
                     $regex = substr($cmd, 12);
-                    // Remove bot username from command
-                    if (self::$username != '') {
-                        $get['message']['text'] = preg_replace('/^\/(.*)@' . self::$username . '(.*)/', '/$1$2', $get['message']['text']);
+                    // Remove bot name from command
+                    if (self::$name != '') {
+                        $get['message']['text'] = preg_replace('/^\/(.*)@' . self::$name . '(.*)/', '/$1$2', $get['message']['text']);
                     }
                     $customRegex = true;
                 } else {
-                    $regex = '/^(?:' . addcslashes($cmd, '/\+*?[^]$(){}=!<>:-') . ')' . (self::$username ? '(?:@' . self::$username . ')?' : '') . '(?:\s(.*))?$/';
+                    $regex = '/^(?:' . addcslashes($cmd, '/\+*?[^]$(){}=!<>:-') . ')' . (self::$name ? '(?:@' . self::$name . ')?' : '') . '(?:\s(.*))?$/';
                 }
                 if ($get['message']['text'] != '*' && preg_match($regex, $get['message']['text'], $matches)) {
                     $run = true;

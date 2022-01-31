@@ -309,10 +309,10 @@ class Bot
      * to build keyboard from string
      */
     public static function keyboard(
-        string $pattern,
-        $input_field_placeholder = 'type here..',
-        $resize_keyboard = true,
-        $one_time_keyboard = true
+        string $pattern = '[keyboard]',
+        string $input_field_placeholder = 'type here..',
+        bool $resize_keyboard = true,
+        bool $one_time_keyboard = true
     ) {
         /**
          * for example: Bot::keyboard('[text]')
@@ -579,14 +579,17 @@ class Bot
             } elseif (isset($this->_onMessage['*'])) {
                 $run = true;
                 $call = $this->_onMessage['*'];
+            } else {
+              $run = true;
+              $call = 'unknown message type';
             }
 
             if ($run) {
                 switch (self::type()) {
-                    case 'callback':
+                    case 'callback_query':
                         $param = $get['callback_query']['data'];
                         break;
-                    case 'inline':
+                    case 'inline_query':
                         $param = $get['inline_query']['query'];
                         break;
                     case 'location':
@@ -685,8 +688,11 @@ class Bot
             $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
         } else {
-
-            if ($upload) return self::send('sendMessage', ['text' => 'Maaf, layanan ini tidak tersedia karena versi PHP yang digunakan saat ini tidak mendukung fungsi curl. Silahkan instal terlebih dahulu']);
+            // upload not available
+            if ($upload) {
+              $action = 'sendMessage';
+              $data['text'] = 'It needs curl to upload file, please install it.';
+            }
 
             $opts = [
                 'http' => [
@@ -697,7 +703,6 @@ class Bot
             ];
 
             $result = file_get_contents(self::$url . '/' . $action, false, stream_context_create($opts));
-            if (!$result) return false;
 
             $httpcode = null; //perlu review lagi
         }
@@ -877,6 +882,12 @@ class Bot
             'getGameHighScores' => 'user_id',
         ];
         if (!isset($firstParam[$action])) {
+          /**
+           * for example:
+           * Bot::$action($args[0]);
+           * Bot::deleteMessage(['message_id'=>123]);
+           * Bot::editMessageText(['message_id'=>123]);
+           * */
             if (isset($args[0]) && is_array($args[0])) {
                 $param = $args[0];
             }

@@ -4,8 +4,14 @@ Modifikasi dari [PHPTelebot](https://github.com/radyakaze/phptelebot) by [radyak
 
 ## Cara Pasang
 
-Salin file `Bot.php` lalu `include` atau `require` ke dalam file projek Anda.
-
+- Salin file `Bot.php`
+    ```bash
+    wget https://raw.githubusercontent.com/dannsbass/bot/master/Bot.php
+    ```
+- Lakukan `include` atau `require` (lebih disarankan) file `Bot.php` ke dalam file projek Anda:
+    ```php
+    require 'Bot.php';
+    ```
 ## Contoh Kode
 
 Berikut ini beberapa contoh kode yang bisa Anda pakai:

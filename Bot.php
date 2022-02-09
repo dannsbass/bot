@@ -309,10 +309,10 @@ class Bot
      * to build keyboard from string
      */
     public static function keyboard(
-        string $pattern = '[keyboard]',
-        string $input_field_placeholder = 'type here..',
-        bool $resize_keyboard = true,
-        bool $one_time_keyboard = true
+        string $pattern,
+        $input_field_placeholder = 'type here..',
+        $resize_keyboard = true,
+        $one_time_keyboard = true
     ) {
         /**
          * for example: Bot::keyboard('[text]')
@@ -358,13 +358,16 @@ class Bot
                         $x[] = $c;
                     }
                     $b0 = trim(str_replace('[', '', $x[0]));
-                    $b1 = trim(str_replace(']', '', $x[1]));
+                    $b1 = trim(str_replace(']', '', $x[1])) ?? '';
                     if (filter_var($b1, FILTER_VALIDATE_URL) !== false) {
                         $arrange[] = [
                             "text" => $b0,
                             "url" => $b1
                         ];
                     } else {
+                        if($b1 == '*' or empty($b1)){
+                            $b1 = $b0;
+                        }
                         $arrange[] = [
                             "text" => $b0,
                             "callback_data" => $b1
@@ -579,17 +582,14 @@ class Bot
             } elseif (isset($this->_onMessage['*'])) {
                 $run = true;
                 $call = $this->_onMessage['*'];
-            } else {
-              $run = true;
-              $call = 'unknown message type';
             }
 
             if ($run) {
                 switch (self::type()) {
-                    case 'callback_query':
+                    case 'callback':
                         $param = $get['callback_query']['data'];
                         break;
-                    case 'inline_query':
+                    case 'inline':
                         $param = $get['inline_query']['query'];
                         break;
                     case 'location':
@@ -688,11 +688,8 @@ class Bot
             $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
         } else {
-            // upload not available
-            if ($upload) {
-              $action = 'sendMessage';
-              $data['text'] = 'It needs curl to upload file, please install it.';
-            }
+
+            if ($upload) return self::send('sendMessage', ['text' => 'Maaf, layanan ini tidak tersedia karena versi PHP yang digunakan saat ini tidak mendukung fungsi curl. Silahkan instal terlebih dahulu']);
 
             $opts = [
                 'http' => [
@@ -703,6 +700,7 @@ class Bot
             ];
 
             $result = file_get_contents(self::$url . '/' . $action, false, stream_context_create($opts));
+            if (!$result) return false;
 
             $httpcode = null; //perlu review lagi
         }
@@ -882,12 +880,6 @@ class Bot
             'getGameHighScores' => 'user_id',
         ];
         if (!isset($firstParam[$action])) {
-          /**
-           * for example:
-           * Bot::$action($args[0]);
-           * Bot::deleteMessage(['message_id'=>123]);
-           * Bot::editMessageText(['message_id'=>123]);
-           * */
             if (isset($args[0]) && is_array($args[0])) {
                 $param = $args[0];
             }

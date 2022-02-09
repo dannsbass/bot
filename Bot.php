@@ -47,6 +47,11 @@ class Bot
     protected static $version = '1.0';
 
     /**
+     * message id
+     */
+    public static $message_id = '';
+
+    /**
      * message text
      */
     public static $message_text = '';
@@ -344,11 +349,11 @@ class Bot
         /**
          * Bot::inline_keyboard('[text|text] [url|http://url]')
          */
-        if (preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]([^\n]+)?([\n]+|$)/', $pattern, $match)) {
+        if (preg_match_all('/\[[^\|\]]+\|?[^\|\]]+\]([^\n]+)?([\n]+|$)/', $pattern, $match)) {
             $arr = $match[0]; #array
             $inline_keyboard = [];
             foreach ($arr as $list) {
-                preg_match_all('/\[[^\|\(\)]+\|[^\|\(\)]+\]/', $list, $new);
+                preg_match_all('/\[[^\|\]]+\|?[^\|\]]+\]/', $list, $new);
                 $array = $new[0];
                 $arrange = [];
                 foreach ($array as $a) {
@@ -357,8 +362,8 @@ class Bot
                     foreach ($b as $c) {
                         $x[] = $c;
                     }
-                    $b0 = trim(str_replace('[', '', $x[0]));
-                    $b1 = trim(str_replace(']', '', $x[1])) ?? '';
+                    $b0 = trim(str_replace(['[',']'], '', $x[0]));
+                    $b1 = isset($x[1]) ? trim(str_replace(']', '', $x[1])) : '';
                     if (filter_var($b1, FILTER_VALIDATE_URL) !== false) {
                         $arrange[] = [
                             "text" => $b0,
@@ -385,6 +390,13 @@ class Bot
      */
     public function all($response){
         return $this->on('*', $response);
+    }
+
+    /**
+     * to get message ID
+     */
+    public static function message_id(){
+        return self::$message_id;
     }
 
     /**
@@ -543,6 +555,8 @@ class Bot
             self::$user .= $get['message']['from']['last_name'] ?? '';
             self::$from_id = $get['message']['from']['id'];
             self::$chat_id = $get['message']['chat']['id'];
+            self::$message_text = $get['message']['text'] ?? '';
+            self::$message_id = $get['message']['message_id'];
         }
         
         if (isset($get['message']['date']) && $get['message']['date'] < (time() - 120)) {
@@ -586,10 +600,10 @@ class Bot
 
             if ($run) {
                 switch (self::type()) {
-                    case 'callback':
+                    case 'callback_query':
                         $param = $get['callback_query']['data'];
                         break;
-                    case 'inline':
+                    case 'inline_query':
                         $param = $get['inline_query']['query'];
                         break;
                     case 'location':
@@ -641,6 +655,8 @@ class Bot
 
         $needChatId = ['sendMessage', 'forwardMessage', 'sendPhoto', 'sendAudio', 'sendDocument', 'sendSticker', 'sendVideo', 'sendVoice', 'sendLocation', 'sendVenue', 'sendContact', 'sendChatAction', 'editMessageText', 'editMessageCaption', 'editMessageReplyMarkup', 'sendGame'];
 
+        $needMessageId = ['editMessageText', 'deleteMessage'];
+
         if (in_array($action, $needChatId) && !isset($data['chat_id'])) {
             $getUpdates = self::$getUpdates;
             if (isset($getUpdates['callback_query'])) {
@@ -654,7 +670,14 @@ class Bot
                 $data['reply_to_message_id'] = $getUpdates['message']['message_id'];
                 unset($data['reply']);
             }
+            if (in_array($action, $needMessageId) and !isset($data['message_id'])){
+                $data['message_id'] = $getUpdates['message']['message_id'];
+                if(isset($getUpdates['message']['reply_markup']) and !isset($data['reply_markup'])){
+                    $data['reply_markup'] = $getUpdates['message']['reply_markup'];
+                }
+            }
         }
+
 
         if (isset($data['reply_markup']) && is_array($data['reply_markup'])) {
             $data['reply_markup'] = json_encode($data['reply_markup']);
@@ -878,6 +901,7 @@ class Bot
             'getChatMembersCount' => 'chat_id',
             'sendGame' => 'game_short_name',
             'getGameHighScores' => 'user_id',
+            'editMessageText' => 'text'
         ];
         if (!isset($firstParam[$action])) {
             if (isset($args[0]) && is_array($args[0])) {

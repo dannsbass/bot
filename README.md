@@ -275,6 +275,65 @@ $bot->callback_query(function () {
 $bot->run();
 ```
 
+### Contoh 10
+```php
+require 'Bot.php';
+
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->start(function () {
+    $user = Bot::user();
+    $id = Bot::from_id();
+    $nama = "<a href='tg://user?id=$id'>$user</a>";
+    $tombol1 = Bot::inline_keyboard("
+    [Kegiatan][Info Kajian]
+    [Grup|https://t.me/PecintaIlmuGrup] [Channel|https://t.me/PecintaIlmuChannel]
+    ");
+    $markup = [
+        'reply' => true,
+        'reply_markup' => $tombol1,
+        'parse_mode' => 'html'
+    ];
+    return Bot::sendMessage("Assalamualaikum $nama di komunitas pecinta ilmu. Silahkan pilih menu di bawah ini:", $markup);
+});
+
+$bot->callback_query(function ($data) {
+    switch ($data) {
+        case 'Kegiatan':
+            return Bot::editMessageText('Kegiatan yang akan diadakan dalam waktu dekat adalah Dauroh Tajwid. Selengkapnya: /info_dauroh_tajwid');
+        case 'Info Kajian':
+            return Bot::editMessageText('Info kajian. Selengkapnya: /info_kajian');
+        case 'Daftar Dauroh Tajwid':
+            return Bot::sendMessage("Silahkan kirim nama Anda");
+    }
+});
+
+$bot->text(function ($text) {
+    switch ($text) {
+        case '/info_dauroh_tajwid':
+            $tombol = Bot::inline_keyboard("
+            [Daftar Dauroh Tajwid]
+            ");
+            $markup = [
+                'reply' => true,
+                'reply_markup' => $tombol
+            ];
+            return Bot::sendMessage("Dauroh Tajwid insyaallah akan diadakan pada ... ", $markup);
+
+        case '/info_kajian':
+            $markup = [
+                'reply' => true,
+            ];
+            return Bot::sendMessage("Kajian insyaallah akan diadakan pada ... ", $markup);
+        
+        default:
+        return Bot::sendMessage('Terima kasih');
+    }
+});
+
+$bot->run();
+```
+
 ### Cara Mudah Membuat Inline Keyboard
 
 Ada cara mudah untuk membuat _inline keyboard_ dengan menggunakan _method_ `Bot::inline_keyboard()`
@@ -318,6 +377,7 @@ $bot->text(function(){
 
 - `start($sambutan)` untuk menyambut user baru yang menekan tombol `START` atau user yang mengirim pesan teks `/start` kepada bot. Parameternya bisa satu berupa string, contoh `start('Assalamualaikum user')`, bisa juga berupa function, contoh `start(function(){ return Bot::sendMessage('Assalamualikum user');})` dan bisa juga disi dengan dua parameter (string dan array), contoh: `start('Assalamualaikum *user*', ['parse_mode'=>'markdown'])` di mana array berisi rincian pesan yang dikirim (lihat dokumentasinya di: [Telegram](https://core.telegram.org/bots/api#sendmessage)).
 - `chat($request, $response)` untuk me-response teks tertentu yang di-request oleh user, contoh `chat('Hai', 'Hai juga')` untuk merespon teks `Hai` dengan teks `Hai juga` atau `chat('Hai', function(){return Bot::sendPhoto('fotoku.jpg');})` untuk merespon teks `Hai` dengan file `fotoku.jpg`. Kalau untuk merespon semua teks yang dikirim oleh user, gunakan string satu bintang ( `*` ) pada parameter pertama seperti ini `chat('*', 'Silahkan hubungi Admin')` atau bisa juga begini `text('Silahkan hubungi Admin')`, dua-duanya sama hasilnya.
+- `chat_array($array)` untuk membuat array chat dengan format `chat_array([$request => $response])`, contoh: `chat_array(['hai' => 'hai juga', 'info' => function(){return Bot::sendMessage('ini adalah info')}, 'oke' => 'terima kasih'])` dan semisalnya.
 - `cmd($request, $response)` alias `chat($request, $response)`.
 - `all($response)` untuk me-response semua event yang belum diatur sebelumnya.
 - **Events** (lihat daftarnya di bawah).
@@ -335,13 +395,14 @@ $bot->text(function(){
   ');`
   ```
 
-- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]`, contoh:
+- `inline_keyboard($pola)` untuk membuat inline keyboard dari string dengan pola `[teks|URL]` atau `[teks|teks]` atau `[Teks]`, contoh:
 
   ```php
   $inline_keyboard = Bot::inline_keyboard('
       [ Next | next ] [ Back | back ]
       [ Menu 1 | menu_1 ] [ Google | https://google.com ]
       [ Info | info ]
+      [ Developer ]
   ');
   ```
 - `name()` untuk mengambil username bot.
@@ -349,6 +410,7 @@ $bot->text(function(){
 - `from_id()` untuk mengambil user id.
 - `chat_id()` untuk mengambil chat id.
 - `message_text()` untuk mengambil teks yang dikirim oleh user (hanya berlaku jika user mengirim pesan teks).
+- `message_id()` untuk mengambil message id
 
 ## Daftar Events
 

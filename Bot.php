@@ -557,6 +557,14 @@ class Bot
             self::$chat_id = $get['message']['chat']['id'];
             self::$message_text = $get['message']['text'] ?? '';
             self::$message_id = $get['message']['message_id'];
+        }elseif(isset($get['my_chat_member'])){
+            self::$user = $get['my_chat_member']['from']['first_name'] ?? '';
+            self::$user .= $get['my_chat_member']['from']['last_name'] ?? '';
+            self::$from_id = $get['my_chat_member']['from']['id'];
+            self::$chat_id = $get['my_chat_member']['chat']['id'];
+            self::$message_text = $get['my_chat_member']['text'] ?? '';
+            self::$message_id = $get['my_chat_member']['message_id'] ?? '';
+
         }
         
         if (isset($get['message']['date']) && $get['message']['date'] < (time() - 120)) {
@@ -664,6 +672,8 @@ class Bot
             }
             if (isset($getUpdates['message']['chat']['id'])) {
                 $data['chat_id'] = $getUpdates['message']['chat']['id'];
+            }elseif(isset($getUpdates['channel_post'])){
+                $data['chat_id'] = $getUpdates['channel_post']['chat']['id'];
             }
             // Reply message
             if (!isset($data['reply_to_message_id']) && isset($data['reply']) && $data['reply'] === true) {
@@ -915,4 +925,108 @@ class Bot
         }
         return call_user_func_array('self::send', [$action, $param]);
     }
+	
+	/**
+	 * Proses pesan sebelum dikirim
+	 * 
+	 * @var string	$teks
+	 * @var array	$data
+	 */
+	public static function prosesPesan(string $teks, array $data = null){
+
+		// jika pesan teks TIDAK melebihi 4096 karakter, langsung kirim
+		if(strlen($teks) <= 4096) return self::sendMessage($teks);
+		
+		// jika pesan teks melebihi 4096 karakter
+		$pecahan = self::potong($teks, 4096);
+		foreach ($pecahan as $no => $pesan) {
+			$pesan = self::cekTag($pesan);
+			$pilihan = $data;
+			if($no === 0){
+				// pesan pertama tanpa markup saja
+				unset($pilihan['reply_markup']);
+				self::sendMessage($pesan, $pilihan);
+			}elseif($no < (count($pecahan) - 1)) {
+				// pesan di tengah tanpa markup dan tanpa reply
+				unset($pilihan['reply']);
+				unset($pilihan['reply_markup']);
+				self::sendMessage($pesan, $pilihan);
+			}else{
+				// pesan terakhir tanpa reply saja
+				unset($data['reply']);
+				self::sendMessage($pesan, $data);
+			}
+		}	
+	}	
+	/**
+	 * potong teks
+	 * 
+	 * @param string    $text
+	 * @param int       $jml_kar
+	 * @return  array 
+	 */
+	public static function potong(string $text, int $jml_kar)
+	{
+		$panjang = strlen($text);
+		$ke = 0;
+		$pecahan = [];
+		while ($panjang > $jml_kar) {
+			$no = $jml_kar;
+			$karakter = $text[$no];
+			while ($karakter != ' ' and $karakter != "\n" and $karakter != "\r" and $karakter != "\r\n") {
+				$karakter = $text[--$no];
+			}
+			$pecahan[] = substr($text, 0, $no);
+			$panjang = strlen($pecahan[$ke]);
+			$text = trim(substr($text, $panjang));
+			$panjang = strlen($text);
+			$ke++;
+		}
+		return array_merge($pecahan, array($text));
+	}
+	
+	/**
+	 * cek tag HTML
+	 * 
+	 * @param string    $html
+	 * @return string
+	 */
+	public static function cekTag(string $html) {
+		// buang semua tag kecuali <a><b><i>
+		$html = strip_tags($html, '<a><b><i>');
+		// tangkap semua tag yang terbuka
+		preg_match_all('#<(?!meta|img|br|hr|input\b)\b([a-z]+)(?: .*)?(?<![/|/ ])>#iU', $html, $result);
+		$openedtags = $result[1];
+		$first_opened_tag_position = strpos($html, $openedtags[0]);
+		//tangkap semua tag yang tertutup
+		preg_match_all('#</([a-z]+)>#iU', $html, $result);
+		$closedtags = $result[1];
+		$first_closed_tag = $closedtags[0];
+		$first_closed_tag_position = strpos($html, $first_closed_tag);
+		// hitung jumlah tag terbuka
+		$len_opened = count($openedtags);
+		// jika jumlah tag tertutup sama dengan jumlah tag terbuka
+		if (count($closedtags) == $len_opened) {
+			// langsung kembalikan
+			return $html;
+		}
+		// balik urutan tag terbuka
+		$openedtags = array_reverse($openedtags);
+		for ($i=0; $i < $len_opened; $i++) {
+			// jika tag terbuka belum tertutup
+			if (!in_array($openedtags[$i], $closedtags)) {
+				// tambah tag tutupnya
+				$html .= '</'.$openedtags[$i].'>';
+			} else {
+				// jika tag terbuka sudah ada tutupnya
+				// buang dari array
+				unset($closedtags[array_search($openedtags[$i], $closedtags)]);
+			}
+		}
+		// jika ada tag penutup yang tidak tidak diawali dengan tag pembuka
+        if ($first_closed_tag_position < $first_opened_tag_position) {
+			$html = str_replace('<', '</', $first_closed_tag) . $html;
+        }
+		return $html;
+	}
 }

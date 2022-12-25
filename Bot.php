@@ -663,9 +663,13 @@ class Bot
             }
         }
 
-        $needChatId = ['sendMessage', 'forwardMessage', 'sendPhoto', 'sendAudio', 'sendDocument', 'sendSticker', 'sendVideo', 'sendVoice', 'sendLocation', 'sendVenue', 'sendContact', 'sendChatAction', 'editMessageText', 'editMessageCaption', 'editMessageReplyMarkup', 'sendGame'];
+        $needChatId = ['sendMessage', 'forwardMessage', 'sendPhoto', 'sendAudio', 'sendDocument', 'sendSticker', 'sendVideo', 'sendVoice', 'sendLocation', 'sendVenue', 'sendContact', 'sendChatAction', 'editMessageText', 'editMessageCaption', 'editMessageReplyMarkup', 'sendGame', 'deleteMessage'];
 
         if (in_array($action, $needChatId) && !isset($data['chat_id'])) {
+            //deleteMessage
+            if($action == 'deleteMessage' and isset($data['message_id']) and is_string($data['message_id']) and isset(json_decode($data['message_id'])->result->message_id)){
+                $data['message_id'] = (json_decode($data['message_id']))->result->message_id;
+            }
             $getUpdates = self::$getUpdates;
             if (isset($getUpdates['callback_query'])) {
                 $getUpdates = $getUpdates['callback_query'];

@@ -575,15 +575,17 @@ class Bot
             self::$message_text = $get['message']['text'];
             $customRegex = false;
             foreach ($this->_command as $cmd => $call) {
-                if (substr($cmd, 0, 12) == 'customRegex:') {
-                    $regex = substr($cmd, 12);
+                $cr = 'customRegex:';
+                $crpos = strpos($cmd, $cr);
+                if (false === $crpos) {
+                    $regex = '/^(?:' . addcslashes($cmd, '/\+*?[^]$(){}=!<>:-') . ')' . (self::$name ? '(?:@' . self::$name . ')?' : '') . '(?:\s(.*))?$/';
+                } elseif (0 === $crpos) {
+                    $regex = substr($cmd, strlen($cr));
                     // Remove bot name from command
                     if (self::$name != '') {
                         $get['message']['text'] = preg_replace('/^\/(.*)@' . self::$name . '(.*)/', '/$1$2', $get['message']['text']);
                     }
                     $customRegex = true;
-                } else {
-                    $regex = '/^(?:' . addcslashes($cmd, '/\+*?[^]$(){}=!<>:-') . ')' . (self::$name ? '(?:@' . self::$name . ')?' : '') . '(?:\s(.*))?$/';
                 }
                 if ($get['message']['text'] != '*' && preg_match($regex, $get['message']['text'], $matches)) {
                     $run = true;
@@ -663,8 +665,6 @@ class Bot
 
         $needChatId = ['sendMessage', 'forwardMessage', 'sendPhoto', 'sendAudio', 'sendDocument', 'sendSticker', 'sendVideo', 'sendVoice', 'sendLocation', 'sendVenue', 'sendContact', 'sendChatAction', 'editMessageText', 'editMessageCaption', 'editMessageReplyMarkup', 'sendGame'];
 
-        $needMessageId = ['editMessageText', 'deleteMessage'];
-
         if (in_array($action, $needChatId) && !isset($data['chat_id'])) {
             $getUpdates = self::$getUpdates;
             if (isset($getUpdates['callback_query'])) {
@@ -679,12 +679,6 @@ class Bot
             if (!isset($data['reply_to_message_id']) && isset($data['reply']) && $data['reply'] === true) {
                 $data['reply_to_message_id'] = $getUpdates['message']['message_id'];
                 unset($data['reply']);
-            }
-            if (in_array($action, $needMessageId) and !isset($data['message_id'])){
-                $data['message_id'] = $getUpdates['message']['message_id'];
-                if(isset($getUpdates['message']['reply_markup']) and !isset($data['reply_markup'])){
-                    $data['reply_markup'] = $getUpdates['message']['reply_markup'];
-                }
             }
         }
 
@@ -911,7 +905,8 @@ class Bot
             'getChatMembersCount' => 'chat_id',
             'sendGame' => 'game_short_name',
             'getGameHighScores' => 'user_id',
-            'editMessageText' => 'text'
+            'editMessageText' => 'text',
+            'deleteMessage' => 'message_id',
         ];
         if (!isset($firstParam[$action])) {
             if (isset($args[0]) && is_array($args[0])) {

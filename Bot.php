@@ -665,7 +665,7 @@ class Bot
 
         $needChatId = ['sendMessage', 'forwardMessage', 'sendPhoto', 'sendAudio', 'sendDocument', 'sendSticker', 'sendVideo', 'sendVoice', 'sendLocation', 'sendVenue', 'sendContact', 'sendChatAction', 'editMessageText', 'editMessageCaption', 'editMessageReplyMarkup', 'sendGame', 'deleteMessage'];
 
-        $needMessageId = ['editMessageText', 'deleteMessage'];
+        $needMessageId = ['editMessageText', 'deleteMessage', 'editMessageReplyMarkup', 'editMessageCaption'];
 
         if (in_array($action, $needChatId) && !isset($data['chat_id'])) {
             //automate message_id
@@ -911,7 +911,9 @@ class Bot
             'getChatMembersCount' => 'chat_id',
             'sendGame' => 'game_short_name',
             'getGameHighScores' => 'user_id',
-            'editMessageText' => 'text',
+            'editMessageText' => 'message_id',
+            'editMessageReplyMarkup' => 'message_id',
+            'editMessageCaption' => 'message_id',
             'deleteMessage' => 'message_id',
         ];
         if (!isset($firstParam[$action])) {

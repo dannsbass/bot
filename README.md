@@ -176,7 +176,7 @@ $bot->run();
 
 Keterangan kode: untuk mengirim foto ke user, gunakan static method `sendPhoto()` dengan parameter `$photo` yang diambil dari _file_id_ foto tesebut. Baca keterangan selengkapnya tentang method [sendPhoto](https://core.telegram.org/bots/api#sendphoto)
 
-### Contoh 7
+### Contoh 7 (Merespon pesan berupa foto, video, dokumen, stiker, dll)
 
 ```php
 require 'Bot.php';
@@ -197,7 +197,7 @@ $bot->run();
 
 **Keterangan contoh 7**: bot merespon pesan teks `/start` dengan pesan teks `Assalamualaikum`, pesan teks `Hai` dengan pesan teks `Hai juga` dan pesan teks `/help` dengan kalimat `Cara menggunakan bot ini adalah sebagai berikut...`. Selain teks itu, bot akan merespon setiap pesan teks dengan pesan teks `Kalau ada pertanyaan silahkan hubungi 08123456789`. Bot juga merespon foto yang diunggah oleh user dengan pesan teks `Kamu baru saja mengunggah foto`, merespon dokumen yang diunggah oleh user dengan pesan teks `Kamu baru saja mengunggah dokumen` dan seterusnya.
 
-### Contoh 8
+### Contoh 8 (Menggunakan fitur `parse_mode` dan `reply` dalam respon)
 
 ```php
 require 'Bot.php';
@@ -214,7 +214,7 @@ $bot->run();
 
 ```
 
-### Contoh 9
+### Contoh 9 (Menggunakan tombol dalam baris / inline keyboard)
 
 ```php
 require 'Bot.php';
@@ -329,6 +329,27 @@ $bot->text(function ($text) {
         default:
         return Bot::sendMessage('Terima kasih');
     }
+});
+
+$bot->run();
+```
+
+### Contoh 11 (Mengedit dan Menghapus pesan)
+```php
+require 'Bot.php';
+
+$bot = new Bot('TOKEN', 'USERNAME'); //ganti dengan TOKEN dan USERNAME dari @BotFather
+
+$bot->cmd('/edit', function(){
+    $edit = Bot::sendMessage("Pesan ini akan DIEDIT");
+    sleep(2);
+    Bot::editMessageText($edit, ['text'=>'Pesan telah diedit']);
+});
+
+$bot->cmd('/hapus', function(){
+    $hapus = Bot::sendMessage("Pesan ini akan DIHAPUS");
+    sleep(2);
+    Bot::deleteMessage($hapus);
 });
 
 $bot->run();

@@ -18,7 +18,7 @@ Berikut ini beberapa contoh kode yang bisa Anda pakai:
 
 ### Contoh 1 (Merespon Semua Pesan Teks dengan Satu Pesan Teks)
 
-<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh1.png'>
+<img src='https://github.com/dannsbass/dannsbass.github.io/blob/master/assets/img/contoh1.png'>
 
 **Keterangan contoh 1**: seperti Anda lihat pada screenshot, bot hanya merespon pesan teks saja dan responnya hanyalah kalimat statis yaitu `Anda mengirim pesan teks`. Selain pesan teks, bot akan mengabaikannya alias tidak meresponnya sama sekali. Berikut ini kodenya:
 
@@ -36,7 +36,7 @@ Keterangan kode: Method yang digunakan untuk merespon semua pesan teks adalah `t
 
 ### Contoh 2 (Merespon Pesan Teks Tertentu dengan Pesan Teks yang Tertentu)
 
-<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh2.png'>
+<img src='https://github.com/dannsbass/dannsbass.github.io/blob/master/assets/img/contoh2.png'>
 
 **Keterangan contoh 2**: bot merespon pesan teks `Hai` dengan `Hai juga`, `Info` dengan `Ini adalah info` dan `/admin` dengan `Ini adalah admin`. Selain itu, semua pesan teks akan direspon dengan kalimat statis `Anda mengirim pesan teks`. Berikut ini kodenya:
 
@@ -61,7 +61,7 @@ Keterangan kode: Method yang digunakan untuk merespon teks tertentu adalah `chat
 
 ### Contoh 3 (Mengirim Teks disertai Tombol/Keyboard)
 
-<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh3.png'>
+<img src='https://github.com/dannsbass/dannsbass.github.io/blob/master/assets/img/contoh3.png'>
 
 **Keterangan contoh 3**: bot merespon perintah `/start` dengan pesan `Silahkan pilih menu berikut ini` disertai lima buah tombol (keyboard) yaitu `TENTANG`, `MENU`, `ADMIN`, `NO REKENING` dan `HELP`. Jika tombol ditekan, bot akan merespon dengan kalimat tertentu. Berikut ini kodenya:
 
@@ -93,7 +93,7 @@ Keterangan kode: Untuk me-reply pesan yang dikirim oleh user, tambahkan elemen `
 
 ### Contoh 4 (Membuat Tombol/Keyboard Inline yang Responsif)
 
-<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh4.png'>
+<img src='https://github.com/dannsbass/dannsbass.github.io/blob/master/assets/img/contoh4.png'>
 
 **Keterangan contoh 4**: bot merespon perintah `/start` dengan kalimat `Selamat user datang di Google` (salah ketik, harusnya: `selamat datang user` hehe..). Perhatikan kata `user` ditebalkan dan kata `Google` berupa link yang merujuk ke situs `https://www.googgle.com`. Selain kalimat tersebut, bot juga menyertakan tombol-tombol (inline keyboard) yang responsif, yaitu jika diklik akan menghasilkan respon `Anda menekan tombol <anu>` kecuali tombol link yang berisi URL ke alamat situs tertentu.
 
@@ -133,7 +133,7 @@ Keterangan kode: untuk membuat inline_keyboard secara mudah dan cepat, gunakan m
 
 ### Contoh 5 (Membalas Foto dengan Teks)
 
-<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh5.png'>
+<img src='https://github.com/dannsbass/dannsbass.github.io/blob/master/assets/img/contoh5.png'>
 
 **Keterangan contoh 5**: bot merespon teks `/start` dengan kalimat `Selamat datang di bot ...` dan merespon foto yang diunggah dengan kalimat `Anda baru saja mengunggah foto dengan rincian sebagai berikut:` lalu disebutkan rincian foto yang dikirim tersebut.
 
@@ -155,7 +155,7 @@ Keterangan kode: Bot merespon foto yang dikirim oleh user menggunakan method `ph
 
 ### Contoh 6 (Membalas Foto dengan Foto yang Sama)
 
-<img src='https://github.com/dannsbass/bot/blob/master/assets/img/contoh6.png'>
+<img src='https://github.com/dannsbass/dannsbass.github.io/blob/master/assets/img/contoh6.png'>
 
 **Keterangan contoh 6**: bot merespon pesan teks `/start` dengan kalimat `Silahkan kirim foto` dan merespon foto yang diunggah dengan mengembalikan foto tersebut ke user yang mengirimnya. Berikut ini kodenya:
 

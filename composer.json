@@ -1,0 +1,28 @@
+{
+    "name": "dannsbass/bot",
+    "type": "library",
+    "description": "Telegram bot library using PHP",
+    "keywords": [
+        "Telegram bot",
+        "PHP Telegram bot",
+        "PHP Telegram bot library"
+    ],
+    "homepage": "https://github.com/dannsbass/bot",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Danns Bass",
+            "email": "dannsbass@gmail.com",
+            "homepage": "https://github.com/dannsbass",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": ">=8.0.0"
+    },
+    "autoload": {
+        "files": [
+            "Bot.php"
+        ]
+    }
+}

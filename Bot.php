@@ -1093,4 +1093,11 @@ class Bot
             usleep(100000);
         }
     }
+    
+    /**
+     * For deleting WebHook
+     */
+    public static function deleteWebhook($drop_pending_updates = false){
+        return Bot::deleteWebhook(['drop_pending_updates' => $drop_pending_updates]);
+    }
 }

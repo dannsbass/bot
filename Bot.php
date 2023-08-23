@@ -918,11 +918,15 @@ class Bot
             'deleteMessage' => 'message_id',
         ];
         if (!isset($firstParam[$action])) {
-            if (isset($args[0]) && is_array($args[0])) {
+            if (isset($args[0]) && is_array($args[0])) { // Bot::anotherMethod(['param1'=>'param1']);
                 $param = $args[0];
             }
         } else {
-            $param[$firstParam[$action]] = $args[0];
+            if (is_array($args[0])){ // Bot::sendMessage(['text'=>'test']);
+                $param = $args[0];
+            }else{
+                $param[$firstParam[$action]] = $args[0]; // Bot::sendMessage('test'); // Bot::__callStatic('sendMessage', ['text'=>'test']);
+            }
             if (isset($args[1]) && is_array($args[1])) {
                 $param = array_merge($param, $args[1]);
             }

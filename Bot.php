@@ -903,6 +903,7 @@ class Bot
             'sendVenue' => 'venue',
             'sendChatAction' => 'action',
             'setWebhook' => 'url',
+            'deleteWebhook' => 'drop_pending_updates',
             'getUserProfilePhotos' => 'user_id',
             'getFile' => 'file_id',
             'getChat' => 'chat_id',
@@ -1092,12 +1093,5 @@ class Bot
     
             usleep(100000);
         }
-    }
-    
-    /**
-     * For deleting WebHook
-     */
-    public static function deleteWebhook($drop_pending_updates = false){
-        return Bot::deleteWebhook(['drop_pending_updates' => $drop_pending_updates]);
     }
 }

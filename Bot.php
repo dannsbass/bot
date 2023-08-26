@@ -1046,9 +1046,9 @@ class Bot
         $map = array('"' => '\"', '$' => '\$', '`' => '\`', '\\' => '\\\\', '!' => '\!');
         $str_requires = strtr($str_requires, $map);
         $path_run = dirname($_SERVER['SCRIPT_FILENAME']);
-        $my_target_exec = "/usr/bin/php -r \"chdir('{$path_run}'); {$str_requires} \\\$params=json_decode(file_get_contents('php://stdin'), true); call_user_func_array('{$function_name}', \\\$params);\"";
+        $my_target_exec = "php -r \"chdir('{$path_run}'); {$str_requires} \\\$params=json_decode(file_get_contents('php://stdin'), true); call_user_func_array('{$function_name}', \\\$params);\"";
         $my_target_exec = strtr(strtr($my_target_exec, $map), $map);
-        $my_background_exec = "(/usr/bin/php -r \"chdir('{$path_run}'); {$str_requires} my_timeout_exec(\\\"{$my_target_exec}\\\", file_get_contents('php://stdin'), {$timeout});\" <&3 &) 3<&0"; //php by default use "sh", and "sh" don't support "<&0"
+        $my_background_exec = "(php -r \"chdir('{$path_run}'); {$str_requires} ".__CLASS__."::my_timeout_exec(\\\"{$my_target_exec}\\\", file_get_contents('php://stdin'), {$timeout});\" <&3 &) 3<&0"; //php by default use "sh", and "sh" don't support "<&0"
         self::my_timeout_exec($my_background_exec, json_encode($params), 2);
     }
 
